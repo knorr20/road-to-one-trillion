@@ -1,0 +1,5 @@
+extracted/
+_extracted_template.html
+.DS_Store
+.image-slots.state.json
+*.log
