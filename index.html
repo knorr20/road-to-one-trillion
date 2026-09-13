@@ -187,7 +187,7 @@
 <script src="assets/69ff1508-02a9-4e0b-b270-1a36c19de08c.js"></script>
 <script src="assets/507a79fd-e470-44da-9e04-7c4b204ccf70.js"></script>
 <style>
-  html, body { margin: 0; padding: 0; background: #0A1526; overflow-x: clip; }
+  html, body { margin: 0; padding: 0; background: #0A1526; overflow-x: clip; overscroll-behavior-y: none; }
   body { -webkit-font-smoothing: antialiased; }
 
   /* Bodoni optical-size tiers: lower opsz = thicker hairlines */
@@ -416,6 +416,12 @@ class Component extends DCLogic {
   q(s) { return this.rootRef.current.querySelector(s); }
   qa(s) { return Array.prototype.slice.call(this.rootRef.current.querySelectorAll(s)); }
   get reduced() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  // Finger/trackpad-on-iPad: native momentum must not fight ScrollTrigger snap.
+  get isTouch() {
+    const ST = window.ScrollTrigger;
+    if (ST && typeof ST.isTouch === 'number') return ST.isTouch > 0;
+    return window.matchMedia('(pointer: coarse)').matches || (navigator.maxTouchPoints || 0) > 0;
+  }
 
   boot(n) {
     if (window.gsap && window.ScrollTrigger && window.Lenis) {
@@ -501,11 +507,20 @@ class Component extends DCLogic {
     if (window.SplitText) g.registerPlugin(window.SplitText);
     if (window.DrawSVGPlugin) g.registerPlugin(window.DrawSVGPlugin);
     g.ticker.lagSmoothing(0);
+    // iOS URL bar resize + pin refresh causes scroll jumps; ignore those resizes.
+    window.ScrollTrigger.config({ ignoreMobileResize: true });
 
     if (!this.reduced && !this.lenis) {
       if (window.__lenis) { try { window.__lenis.destroy(); } catch (e) {} }
       if (window.__lenisRaf) g.ticker.remove(window.__lenisRaf);
-      this.lenis = new window.Lenis({ lerp: 0.1, wheelMultiplier: 1.05, smoothWheel: true, syncTouch: false });
+      // Never syncTouch — native iOS scroll + Lenis = rubber-band fights.
+      this.lenis = new window.Lenis({
+        lerp: 0.1,
+        wheelMultiplier: 1.05,
+        smoothWheel: !this.isTouch,
+        syncTouch: false,
+        touchMultiplier: 1.2
+      });
       this.lenis.on('scroll', window.ScrollTrigger.update);
       window.__lenis = this.lenis;
       this.rafId = (t) => this.lenis && this.lenis.raf(t * 1000);
@@ -538,8 +553,10 @@ class Component extends DCLogic {
   keep(x) { (window.__rt1 = window.__rt1 || []).push(x && x.scrollTrigger ? x.scrollTrigger : x); return x; }
 
   // Soft magnetic snap: only pulls when progress is near a hold point.
+  // Touch/iOS: skip snap — ST snap + native momentum jerks hard when a hold
+  // releases (close "make it personal", ch2 stills, campaign road, network).
   magneticSnap(points, radius = 0.085) {
-    if (this.reduced || !points || !points.length) return undefined;
+    if (this.reduced || this.isTouch || !points || !points.length) return undefined;
     const sorted = points.slice().sort((a, b) => a - b);
     const lenis = () => this.lenis || window.__lenis;
     return {
@@ -552,13 +569,19 @@ class Component extends DCLogic {
         }
         return dist <= radius ? closest : value;
       },
-      duration: { min: 0.14, max: 0.34 },
-      delay: 0.08,
-      ease: 'power1.out',
+      duration: { min: 0.18, max: 0.42 },
+      delay: 0,
+      ease: 'power2.out',
       onStart: () => { const l = lenis(); if (l && l.stop) l.stop(); },
       onComplete: () => { const l = lenis(); if (l && l.start) l.start(); },
       onInterrupt: () => { const l = lenis(); if (l && l.start) l.start(); }
     };
+  }
+
+  // Soften scrub on touch so pin beats still feel paced without snap anchors.
+  scrubValue() {
+    if (this.isTouch) return Math.max(0.55, (this.cfg && this.cfg.scrub) || 0.35);
+    return (this.cfg && this.cfg.scrub) || 0.35;
   }
 
   build() {
