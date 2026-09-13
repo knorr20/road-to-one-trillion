@@ -226,6 +226,28 @@
     text-shadow: none;
   }
 
+  /* Hybrid type system — poster beats centered; stacks stay left but crafted */
+  .t-center { text-align: center; margin-left: auto; margin-right: auto; }
+  .t-display { max-width: 15ch; text-wrap: balance; }
+  .t-lede {
+    max-width: 48ch;
+    margin-top: clamp(22px, 2.5vw, 36px);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+  .t-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(22px, 2.5vw, 36px);
+    width: 100%;
+  }
+  .t-stack > .t-lede { margin-top: 0; }
+  .t-balance { text-wrap: balance; }
+  .t-em { color: #D9A441; font-style: normal; }
+  .t-em-italic { font-style: italic; color: inherit; }
+  .t-card-gap { gap: 14px; }
+
   a { color: #D9A441; text-decoration: none; }
   a:hover { color: #F4F0E7; }
   ::selection { background: #D9A441; color: #0A1526; }
@@ -240,10 +262,12 @@
     <span data-chapter-name="">The scale problem</span>
   </div>
 
-  <section data-ground="navy" style="position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 120px clamp(20px, 3.4vw, 52px) 160px; box-sizing: border-box; background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px); overflow: hidden;">
+  <section data-ground="navy" style="position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 120px clamp(20px, 3.4vw, 52px) 160px; box-sizing: border-box; background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px); overflow: hidden;">
     <div data-dotfield="hero" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
-    <h1 data-hero-head="" style="position: relative; z-index: 1; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(42px, 7.4vw, 132px); line-height: 1.0; letter-spacing: -0.025em; margin: 0; max-width: 16ch; text-wrap: balance;" data-bodoni="section">Core VC has a rare kind of ambition.</h1>
-    <p data-hero-lede="" style="position: relative; z-index: 1; font-size: clamp(16px, 1.35vw, 20px); line-height: 1.6; color: #C6CEDA; max-width: 54ch; margin: clamp(34px, 4vw, 56px) 0 0;">Create one trillion dollars in new wealth for everyday Americans. It is bold, it is measurable, and if achieved it changes the financial lives of millions of people.</p>
+    <div class="t-stack" style="position: relative; z-index: 1;">
+      <h1 data-hero-head="" class="t-center t-display" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(42px, 7.4vw, 132px); line-height: 1.0; letter-spacing: -0.025em; margin: 0;" data-bodoni="section">Core VC has a rare kind of ambition.</h1>
+      <p data-hero-lede="" class="t-center t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #C6CEDA; margin: 0;">Create <span class="t-em">one trillion dollars</span> in new wealth for everyday Americans. It is bold, it is measurable, and if achieved it changes the financial lives of millions of people.</p>
+    </div>
   </section>
 
   <section data-scene="" data-ground="navy" style="position: relative; height: 100vh; overflow: hidden; background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px);">
@@ -255,17 +279,17 @@
 
   <section data-close="" data-ground="bone" style="position: relative; min-height: 100vh; background-color: #F4F0E7; color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
     <div data-close-pad="" style="position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: clamp(30px, 4.4vw, 64px); padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box;">
-      <div data-beat="people" style="display: flex; flex-direction: column; gap: 14px; max-width: 40ch;">
-        <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 4.6vw, 78px); line-height: 1.0; letter-spacing: -0.022em;" data-bodoni="card">The people</div>
+      <div data-beat="people" class="t-card-gap" style="display: flex; flex-direction: column; max-width: 40ch;">
+        <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 4.6vw, 78px); line-height: 1.0; letter-spacing: -0.022em;" data-bodoni="card">The people</div>
         <div style="font-size: clamp(16px, 1.35vw, 20px); line-height: 1.55; color: #2C3949; max-width: 36ch;">The Americans at the heart of this mission don't know it exists.</div>
       </div>
-      <div data-beat="number" style="position: relative; display: flex; flex-direction: column; gap: 14px; max-width: 40ch;">
+      <div data-beat="number" class="t-card-gap" style="position: relative; display: flex; flex-direction: column; max-width: 40ch;">
         <div data-dotfield="number" style="position: absolute; left: 42ch; top: -40px; width: min(46vw, 620px); height: 260px; pointer-events: none;"></div>
-        <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 4.6vw, 78px); line-height: 1.0; letter-spacing: -0.022em;" data-bodoni="card">The number</div>
+        <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 4.6vw, 78px); line-height: 1.0; letter-spacing: -0.022em;" data-bodoni="card">The number</div>
         <div style="font-size: clamp(16px, 1.35vw, 20px); line-height: 1.55; color: #2C3949; max-width: 36ch;">A trillion dollars is too big to feel.</div>
       </div>
-      <div data-beat="question" style="display: flex; align-items: center;">
-        <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(44px, 8.2vw, 148px); line-height: 0.98; letter-spacing: -0.03em; max-width: 15ch; text-wrap: balance;" data-bodoni="mega">So how do you make it personal?</div>
+      <div data-beat="question" style="display: flex; align-items: center; justify-content: center; width: 100%;">
+        <div class="t-center t-display" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(44px, 8.2vw, 148px); line-height: 0.98; letter-spacing: -0.03em;" data-bodoni="mega">So how do you make it <span class="t-em">personal</span>?</div>
       </div>
     </div>
   </section>
@@ -274,9 +298,9 @@
     <div data-ch2-ground="" style="position: absolute; inset: 0; background: #0A1526;"></div>
     <div data-ch2-pad="" style="position: relative; padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box; display: flex; align-items: center; min-height: 100vh;">
       <div style="position: relative; width: 100%; max-width: 1500px; margin: 0 auto;">
-        <div data-ch2-cap="title" style="display: flex; flex-direction: column; gap: clamp(22px, 3vw, 38px); max-width: 62ch;">
-          <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(40px, 6.4vw, 116px); line-height: 0.98; letter-spacing: -0.028em; max-width: 14ch;" data-bodoni="section">Turn the number into a story.</div>
-          <div style="font-size: clamp(16px, 1.35vw, 20px); line-height: 1.6; color: #E6E2D8; max-width: 52ch;"><span style="font-style: italic;">The Road to One Trillion</span> takes a once-in-a-generation pursuit and translates it into a documentary series that carries Core's message through the people, companies and ideas driving it forward.</div>
+        <div data-ch2-cap="title" class="t-stack" style="max-width: 62ch; margin-left: auto; margin-right: auto;">
+          <div class="t-center t-display" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(40px, 6.4vw, 116px); line-height: 0.98; letter-spacing: -0.028em;" data-bodoni="section">Turn the number into a story.</div>
+          <div class="t-center t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #E6E2D8; margin: 0;"><span class="t-em-italic">The Road to One Trillion</span> takes a once-in-a-generation pursuit and translates it into a documentary series that carries Core's message through the people, companies and ideas driving it forward.</div>
         </div>
         <div data-ch2-cap="0" style="margin-top: clamp(30px, 4.4vw, 64px); position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
           <div data-still-frame="" style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0A1526;">
@@ -299,8 +323,8 @@
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,21,38,0.08) 0%, rgba(10,21,38,0.55) 58%, rgba(10,21,38,0.9) 100%); pointer-events: none;"></div>
           <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: clamp(20px, 3vw, 40px); font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(28px, 4vw, 56px); line-height: 1.02; letter-spacing: -0.024em; max-width: 17ch; text-wrap: balance; color: #F4F0E7; text-shadow: 0 1px 18px rgba(10,21,38,0.55);" data-bodoni="card">Parents who no longer panic over every runny nose, because the insurance holds.</div>
         </div>
-        <div data-ch2-cap="made" style="margin-top: clamp(30px, 4.4vw, 64px); font-size: clamp(17px, 1.6vw, 24px); line-height: 1.55; color: #F4F0E7; max-width: 46ch;">Nothing needs to be manufactured. The stakes, the characters and the challenge are already in place.</div>
-        <div data-ch2-cap="close" style="margin-top: clamp(30px, 4.4vw, 64px); font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(38px, 5.6vw, 104px); line-height: 1.0; letter-spacing: -0.028em; max-width: 16ch; text-wrap: balance;" data-bodoni="section">Core has already begun writing an extraordinary story. Now it is time to share it.</div>
+        <div data-ch2-cap="made" class="t-center t-lede" style="margin-top: clamp(30px, 4.4vw, 64px); font-size: clamp(17px, 1.6vw, 24px); line-height: 1.55; color: #F4F0E7;">Nothing needs to be manufactured. The stakes, the characters and the challenge are already in place.</div>
+        <div data-ch2-cap="close" class="t-center t-display" style="margin-top: clamp(30px, 4.4vw, 64px); font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(38px, 5.6vw, 104px); line-height: 1.0; letter-spacing: -0.028em;" data-bodoni="section">Core has already begun writing an extraordinary story. Now it is time to <span class="t-em">share it</span>.</div>
       </div>
     </div>
   </section>
@@ -310,36 +334,36 @@
       <svg data-ch3-svg="" viewBox="0 0 4000 400" preserveAspectRatio="none" style="position: absolute; left: 0; top: 58%; width: 400vw; height: 40vh; overflow: visible; pointer-events: none; z-index: 2;">
         <path data-ch3-path="" d="M0,300 C 420,300 560,150 1000,150 C 1420,150 1560,270 2000,250 C 2440,230 2560,110 3000,120 C 3420,130 3620,210 4000,190" fill="none" stroke="#0A1526" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
       </svg>
-      <div style="flex: 0 0 100vw; height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 28px; padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box; position: relative;">
-        <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(38px, 6vw, 108px); line-height: 0.98; letter-spacing: -0.028em; max-width: 13ch;" data-bodoni="section">The first film is only the beginning.</div>
-        <div style="font-size: clamp(16px, 1.35vw, 20px); line-height: 1.6; color: #2C3949; max-width: 52ch;">An ongoing documentary campaign, not a single film. More than talking heads describing a better future. We follow the people building it, go inside the companies taking on America's hardest problems, and show what is working, what isn't, and how far there is still to go.</div>
+      <div style="flex: 0 0 100vw; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(22px, 2.5vw, 36px); padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box; position: relative; text-align: center;">
+        <div class="t-center t-display" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(38px, 6vw, 108px); line-height: 0.98; letter-spacing: -0.028em;" data-bodoni="section">The first film is only the beginning.</div>
+        <div class="t-center t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #2C3949; margin: 0;">An ongoing documentary campaign, not a single film. More than talking heads describing a better future. We follow the people building it, go inside the companies taking on America's hardest problems, and show what is working, what isn't, and how far there is still to go.</div>
       </div>
       <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box;">
-        <div data-ch3-card="" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column; gap: 14px;">
+        <div data-ch3-card="" class="t-card-gap" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column;">
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #8A6410;">01</div>
-          <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 3.8vw, 62px); line-height: 1.0; letter-spacing: -0.02em;" data-bodoni="card">The flagship</div>
+          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 3.8vw, 62px); line-height: 1.0; letter-spacing: -0.02em;" data-bodoni="card">The <span class="t-em">flagship</span></div>
           <div style="font-size: clamp(15px, 1.25vw, 19px); line-height: 1.55; color: #2C3949;">A premium long-form documentary establishes the story and introduces the people, companies and challenges at the heart of Core's pursuit.</div>
         </div>
         <div data-ch3-dot="" style="position: absolute; left: 22%; top: 52%; width: 11px; height: 11px; border-radius: 50%; background: #D9A441;"></div>
       </div>
       <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box;">
-        <div data-ch3-card="" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column; gap: 14px;">
+        <div data-ch3-card="" class="t-card-gap" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column;">
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #8A6410;">02</div>
-          <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 3.8vw, 62px); line-height: 1.0; letter-spacing: -0.02em;" data-bodoni="card">The chapters</div>
+          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 3.8vw, 62px); line-height: 1.0; letter-spacing: -0.02em;" data-bodoni="card">The chapters</div>
           <div style="font-size: clamp(15px, 1.25vw, 19px); line-height: 1.55; color: #2C3949;">Shorter films follow the sparks as they happen. A breakthrough. A setback. A victory.</div>
         </div>
         <div data-ch3-dot="" style="position: absolute; left: 22%; top: 52%; width: 11px; height: 11px; border-radius: 50%; background: #D9A441;"></div>
       </div>
       <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box;">
-        <div data-ch3-card="" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column; gap: 14px;">
+        <div data-ch3-card="" class="t-card-gap" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column;">
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #8A6410;">03</div>
-          <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 3.8vw, 62px); line-height: 1.0; letter-spacing: -0.02em;" data-bodoni="card">The journey</div>
+          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 3.8vw, 62px); line-height: 1.0; letter-spacing: -0.02em;" data-bodoni="card">The journey</div>
           <div style="font-size: clamp(15px, 1.25vw, 19px); line-height: 1.55; color: #2C3949;">As Core moves toward one trillion, every new person, company, breakthrough and milestone creates another chapter.</div>
         </div>
         <div data-ch3-dot="" style="position: absolute; left: 22%; top: 52%; width: 11px; height: 11px; border-radius: 50%; background: #D9A441;"></div>
       </div>
-      <div style="flex: 0 0 66vw; height: 100%; display: flex; align-items: center; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box;">
-        <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 4.2vw, 74px); line-height: 1.02; letter-spacing: -0.024em; max-width: 18ch;" data-bodoni="section">Real people, real stakes, and a real outcome that hasn't been decided yet.</div>
+      <div style="flex: 0 0 66vw; height: 100%; display: flex; align-items: center; justify-content: center; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box; text-align: center;">
+        <div class="t-center t-display" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 4.2vw, 74px); line-height: 1.02; letter-spacing: -0.024em; max-width: 16ch;" data-bodoni="section">Real people, real stakes, and a real outcome that hasn't been decided yet.</div>
       </div>
     </div>
   </section>
@@ -360,31 +384,31 @@
       <div data-ch4-node="viewers" data-kind="role" style="position: absolute; left: 0; top: 0; opacity: 0; font-size: 12px; letter-spacing: 0.04em; color: #8E9AAB; white-space: nowrap; display: flex; align-items: center; gap: 8px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #4A5769; display: block;"></span>viewers</div>
     </div>
     <div data-ch4-col="" style="position: relative; width: 44%; min-width: 320px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box;">
-      <div data-ch4-head="" style="display: flex; flex-direction: column; gap: 20px;">
-        <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 4.6vw, 82px); line-height: 0.98; letter-spacing: -0.026em; max-width: 12ch;" data-bodoni="section">Putting the story to work.</div>
-        <div style="font-size: clamp(16px, 1.3vw, 19px); line-height: 1.6; color: #C6CEDA; max-width: 40ch;">A living documentary property that grows alongside the pursuit.</div>
+      <div data-ch4-head="" style="display: flex; flex-direction: column; gap: clamp(22px, 2.5vw, 36px);">
+        <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 4.6vw, 82px); line-height: 0.98; letter-spacing: -0.026em; max-width: 14ch;" data-bodoni="section">Putting the story to work.</div>
+        <div style="font-size: clamp(16px, 1.3vw, 19px); line-height: 1.6; color: #C6CEDA; max-width: 42ch;">A living documentary property that grows alongside the pursuit.</div>
       </div>
       <div style="position: relative; margin-top: clamp(28px, 3.5vw, 52px); min-height: 240px;">
-        <div data-benefit="0" style="display: flex; flex-direction: column; gap: 12px; max-width: 42ch; margin-bottom: 30px;">
-          <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(24px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.018em;" data-bodoni="card">Find the next generation</div>
+        <div data-benefit="0" class="t-card-gap" style="display: flex; flex-direction: column; max-width: 42ch; margin-bottom: 30px;">
+          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(24px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.018em;" data-bodoni="card">Find the next generation</div>
           <div style="font-size: clamp(15px, 1.25vw, 18px); line-height: 1.55; color: #C6CEDA;">Put Core's philosophy in front of entrepreneurs already trying to solve the problems Core cares about, and meet them earlier than anyone else does.</div>
         </div>
-        <div data-benefit="1" style="display: flex; flex-direction: column; gap: 12px; max-width: 42ch; margin-bottom: 30px;">
-          <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(24px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.018em;" data-bodoni="card">Amplify the portfolio</div>
+        <div data-benefit="1" class="t-card-gap" style="display: flex; flex-direction: column; max-width: 42ch; margin-bottom: 30px;">
+          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(24px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.018em;" data-bodoni="card">Amplify the portfolio</div>
           <div style="font-size: clamp(15px, 1.25vw, 18px); line-height: 1.55; color: #C6CEDA;">Give exceptional portfolio companies a premium platform to tell their stories, expand their reach, and bring new people into the ecosystem.</div>
         </div>
-        <div data-benefit="2" style="display: flex; flex-direction: column; gap: 12px; max-width: 42ch; margin-bottom: 30px;">
-          <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(24px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.018em;" data-bodoni="card">Build the network</div>
+        <div data-benefit="2" class="t-card-gap" style="display: flex; flex-direction: column; max-width: 42ch; margin-bottom: 30px;">
+          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(24px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.018em;" data-bodoni="card">Build the <span class="t-em">network</span></div>
           <div style="font-size: clamp(15px, 1.25vw, 18px); line-height: 1.55; color: #C6CEDA;">Every founder, company, customer, expert, investor and viewer brought into the story creates new connections, and new opportunities for Core.</div>
         </div>
       </div>
     </div>
   </section>
 
-  <section data-finale="" data-ground="bone" style="position: relative; min-height: 100vh; background-color: #F4F0E7; color: #0A1526; display: flex; flex-direction: column; justify-content: center; gap: clamp(40px, 6vw, 90px); padding: 140px clamp(20px, 3.4vw, 52px) 180px; box-sizing: border-box; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
-    <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(32px, 4.6vw, 82px); line-height: 1.0; letter-spacing: -0.024em; max-width: 17ch;" data-bodoni="section">Every story creates another opportunity to build the network.</div>
-    <div style="display: flex; flex-direction: column; gap: 14px; max-width: 46ch;">
-      <div style="font-size: clamp(16px, 1.3vw, 19px); line-height: 1.6; color: #2C3949;">A thirty-minute conversation, and a first chapter as a pilot before anything larger is committed.</div>
+  <section data-finale="" data-ground="bone" style="position: relative; min-height: 100vh; background-color: #F4F0E7; color: #0A1526; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(28px, 3.5vw, 48px); padding: 140px clamp(20px, 3.4vw, 52px) 180px; box-sizing: border-box; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px); text-align: center;">
+    <div class="t-center t-display" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(32px, 4.6vw, 82px); line-height: 1.0; letter-spacing: -0.024em;" data-bodoni="section">Every story creates another opportunity to build the network.</div>
+    <div class="t-stack" style="max-width: 48ch;">
+      <div class="t-center t-lede" style="font-size: clamp(16px, 1.3vw, 19px); color: #2C3949; margin: 0;">A thirty-minute conversation, and a first chapter as a <span class="t-em">pilot</span> before anything larger is committed.</div>
       <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #8A6410;">THE ASK · PILOT CHAPTER</div>
     </div>
   </section>
@@ -760,7 +784,11 @@ class Component extends DCLogic {
       cpad.style.minHeight = '0';
     }
     const question = this.q('[data-beat="question"]');
-    if (question) g.set(question, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, padding: '120px ' + pad + ' 150px', boxSizing: 'border-box' });
+    if (question) g.set(question, {
+      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+      padding: '120px ' + pad + ' 150px', boxSizing: 'border-box',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%'
+    });
 
     const p2 = this.q('[data-ch2-pad]');
     if (p2) {
