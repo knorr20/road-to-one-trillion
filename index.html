@@ -593,8 +593,8 @@ class Component extends DCLogic {
   }
 
   scrubValue() {
-    // Keep mild — heavy scrub skips short beats (ch3 cards, still dissolves).
-    if (this.isTouch) return 0.4;
+    // Mild scrub — enough to soften edges, not enough to skip beats.
+    if (this.isTouch) return 0.35;
     return (this.cfg && this.cfg.scrub) || 0.35;
   }
 
@@ -621,9 +621,11 @@ class Component extends DCLogic {
   }
 
   // Wrap section children in a sticky viewport shell; section itself becomes tall.
+  // Extra settle keeps the last frame on screen before the sticky releases.
   touchStickyStage(sec, scrollVh) {
     if (!sec || !this.isTouch) return;
     const shellH = window.innerHeight;
+    const settle = 0.45;
     let stage = sec.querySelector(':scope > [data-touch-stage]');
     if (!stage) {
       stage = document.createElement('div');
@@ -640,55 +642,23 @@ class Component extends DCLogic {
     stage.style.minHeight = shellH + 'px';
     stage.style.overflow = 'hidden';
     stage.style.boxSizing = 'border-box';
-    // Keep the held frame filled — section bg scrolls away under sticky.
     stage.style.backgroundColor = getComputedStyle(sec).backgroundColor || '';
-    sec.style.height = (scrollVh * shellH) + 'px';
+    // Never transform the sticky node itself.
+    if (window.gsap) window.gsap.set(stage, { clearProps: 'transform,x,y' });
+    sec.style.height = ((scrollVh + settle) * shellH) + 'px';
     sec.style.minHeight = '0';
     sec.style.overflow = 'visible';
     return stage;
   }
 
-  // Soft dissolve between major slides. Keep it light so content stays readable.
+  // Soft handoffs use real gradient spacers — no fixed veils (those felt like yanks).
   easeSlideHandoffs() {
     if (this.reduced) return;
-    const g = window.gsap;
     const root = this.rootRef && this.rootRef.current;
     if (!root) return;
     root.querySelectorAll('[data-slide-veil-layer]').forEach((n) => n.remove());
     const old = root.querySelector('[data-slide-veil]');
     if (old) old.remove();
-    const secs = [
-      this.q('[data-scene]'),
-      this.q('[data-close]'),
-      this.q('[data-ch2]'),
-      this.q('[data-ch3]'),
-      this.q('[data-ch4]'),
-      this.q('[data-finale]')
-    ].filter(Boolean);
-    const scrub = this.isTouch ? 0.55 : 0.45;
-    for (let i = 0; i < secs.length - 1; i++) {
-      const prev = secs[i];
-      const next = secs[i + 1];
-      // Dedicated gradient bridges handle these handoffs — veils felt like auto-dock.
-      if (prev.hasAttribute('data-ch2') && next.hasAttribute('data-ch3')) continue;
-      if (prev.hasAttribute('data-ch3') && next.hasAttribute('data-ch4')) continue;
-      const bg = getComputedStyle(next).backgroundColor || '#0A1526';
-      const layer = document.createElement('div');
-      layer.setAttribute('data-slide-veil-layer', '');
-      layer.style.cssText = 'position:fixed;inset:0;z-index:42;pointer-events:none;opacity:0;background:' + bg + ';';
-      root.appendChild(layer);
-      const tl = g.timeline({
-        scrollTrigger: {
-          trigger: next,
-          start: 'top 88%',
-          end: 'top 12%',
-          scrub
-        }
-      });
-      tl.fromTo(layer, { opacity: 0 }, { opacity: 0.22, ease: 'none', duration: 0.4 }, 0)
-        .to(layer, { opacity: 0, ease: 'none', duration: 0.6 }, 0.4);
-      this.keep(tl);
-    }
   }
 
   build() {
@@ -711,8 +681,7 @@ class Component extends DCLogic {
     this.chapter4();
     this.grounds();
     this.easeSlideHandoffs();
-    this.bridgeCh2ToCh3();
-    this.bridgeCh3ToCh4();
+    this.bridgeAllHandoffs();
     window.ScrollTrigger.refresh();
   }
 
@@ -734,19 +703,24 @@ class Component extends DCLogic {
     return bridge;
   }
 
-  bridgeCh2ToCh3() {
-    const ch2 = this.q('[data-ch2]');
-    if (!ch2) return;
-    const h = Math.round(window.innerHeight * (this.isTouch ? 0.4 : 0.2));
-    this.ensureBridge('ch2-ch3', ch2, h, 'linear-gradient(180deg,#0A1526 0%,#F4F0E7 100%)');
-  }
-
-  // Soft landing between campaign release and network — kills the downward yank.
-  bridgeCh3ToCh4() {
-    const ch3 = this.q('[data-ch3]');
-    if (!ch3) return;
-    const h = Math.round(window.innerHeight * (this.isTouch ? 0.55 : 0.28));
-    this.ensureBridge('ch3-ch4', ch3, h, 'linear-gradient(180deg,#F4F0E7 0%,#0A1526 100%)');
+  bridgeAllHandoffs() {
+    const h = (ratio) => Math.round(window.innerHeight * (this.isTouch ? ratio : ratio * 0.55));
+    const navy = '#0A1526', bone = '#F4F0E7';
+    // scene (navy) → close (bone)
+    this.ensureBridge('scene-close', this.q('[data-scene]'), h(0.38),
+      'linear-gradient(180deg,' + navy + ' 0%,' + bone + ' 100%)');
+    // close (bone) → ch2 (dark)
+    this.ensureBridge('close-ch2', this.q('[data-close]'), h(0.38),
+      'linear-gradient(180deg,' + bone + ' 0%,' + navy + ' 100%)');
+    // ch2 → ch3
+    this.ensureBridge('ch2-ch3', this.q('[data-ch2]'), h(0.4),
+      'linear-gradient(180deg,' + navy + ' 0%,' + bone + ' 100%)');
+    // ch3 → ch4
+    this.ensureBridge('ch3-ch4', this.q('[data-ch3]'), h(0.5),
+      'linear-gradient(180deg,' + bone + ' 0%,' + navy + ' 100%)');
+    // ch4 → finale
+    this.ensureBridge('ch4-finale', this.q('[data-ch4]'), h(0.42),
+      'linear-gradient(180deg,' + navy + ' 0%,' + bone + ' 100%)');
   }
 
   // The template is authored as a readable flowing page; pinning needs each
@@ -763,14 +737,13 @@ class Component extends DCLogic {
       sec.style.overflow = 'hidden';
     };
 
-    // Touch: sticky for vertical story + sticky road for ch3 (no GSAP pin —
-    // pin was auto-docking the campaign onto the screen mid slide-2).
+    // Touch: sticky for all story chapters including network (no GSAP pin yanks).
     if (this.isTouch) {
       this.touchStickyStage(this.q('[data-scene]'), 1 + (this.cfg.lengthVh || 1.5));
       this.touchStickyStage(this.q('[data-close]'), 3.2);
       this.touchStickyStage(this.q('[data-ch2]'), 3.6);
       // ch3 height/overflow owned by chapter3Touch()
-      viewport(this.q('[data-ch4]'));
+      this.touchStickyStage(this.q('[data-ch4]'), 3.8);
     } else {
       viewport(this.q('[data-close]'));
       viewport(this.q('[data-ch2]'));
@@ -1285,9 +1258,10 @@ class Component extends DCLogic {
     const order = els.map((e, i) => i);
     const tl = g.timeline({
       scrollTrigger: this.pinScroll(Object.assign(
-        this.scrollSpan(sec, '+=280%', true),
+        this.scrollSpan(sec, '+=280%', !this.isTouch),
         {
-          forcePin: true,
+          // Touch uses sticky stage from lockScenes — never force a pin yank here.
+          forcePin: !this.isTouch,
           pinType: 'fixed',
           anticipatePin: 0,
           onEnter: () => this.sim && this.sim.alpha(0.7).restart(),
