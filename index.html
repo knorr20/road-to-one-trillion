@@ -1019,13 +1019,13 @@ class Component extends DCLogic {
         start: 'top top',
         end: () => '+=' + travel(),
         invalidateOnRefresh: true,
-        forcePin: true,
-        snap: this.magneticSnap([0.04, 0.22, 0.46, 0.70, 0.92], 0.08)
+        forcePin: true
       })
     });
-    tl.to(track, { x: () => -travel(), ease: 'none', duration: 1 }, 0);
-    if (window.DrawSVGPlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.92 }, 0.04);
-    [0.2, 0.44, 0.68].forEach((at, i) => {
+    // Hold the opener briefly, then travel — avoids a clipped first frame.
+    tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 0.9 }, 0.06);
+    if (window.DrawSVGPlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.86 }, 0.08);
+    [0.22, 0.46, 0.68].forEach((at, i) => {
       tl.to(cards[i], { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, at)
         .to(dots[i], { scale: 1, duration: 0.08, ease: 'back.out(2)' }, at + 0.02);
     });
@@ -1127,7 +1127,6 @@ class Component extends DCLogic {
         this.scrollSpan(sec, '+=280%', true),
         {
           forcePin: true,
-          snap: this.magneticSnap([0.08, 0.18, 0.40, 0.64, 0.92], 0.08),
           onEnter: () => this.sim && this.sim.alpha(0.7).restart(),
           onLeave: () => this.sim && this.sim.stop(),
           onLeaveBack: () => this.sim && this.sim.stop(),
