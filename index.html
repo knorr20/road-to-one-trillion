@@ -510,13 +510,13 @@ class Component extends DCLogic {
     // iOS URL bar resize + pin refresh causes scroll jumps; ignore those resizes.
     window.ScrollTrigger.config({ ignoreMobileResize: true, autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load' });
 
-    // Touch: no Lenis. normalizeScroll keeps iOS pins from sliding away
-    // (critical for the horizontal campaign chapter).
+    // Touch: no Lenis, no normalizeScroll — normalizeScroll was auto-docking
+    // slide 3 onto the screen before the user finished slide 2.
     if (this.isTouch && !this.reduced) {
       if (window.__lenis) { try { window.__lenis.destroy(); } catch (e) {} window.__lenis = null; }
       if (window.__lenisRaf) { try { g.ticker.remove(window.__lenisRaf); } catch (e) {} window.__lenisRaf = null; }
       this.lenis = null;
-      try { window.ScrollTrigger.normalizeScroll(true); } catch (e) {}
+      try { window.ScrollTrigger.normalizeScroll(false); } catch (e) {}
     } else if (!this.reduced && !this.lenis) {
       if (window.__lenis) { try { window.__lenis.destroy(); } catch (e) {} }
       if (window.__lenisRaf) g.ticker.remove(window.__lenisRaf);
@@ -669,7 +669,8 @@ class Component extends DCLogic {
     for (let i = 0; i < secs.length - 1; i++) {
       const prev = secs[i];
       const next = secs[i + 1];
-      // ch3→ch4 has its own gradient bridge; a veil there felt like a yank.
+      // Dedicated gradient bridges handle these handoffs — veils felt like auto-dock.
+      if (prev.hasAttribute('data-ch2') && next.hasAttribute('data-ch3')) continue;
       if (prev.hasAttribute('data-ch3') && next.hasAttribute('data-ch4')) continue;
       const bg = getComputedStyle(next).backgroundColor || '#0A1526';
       const layer = document.createElement('div');
@@ -710,29 +711,42 @@ class Component extends DCLogic {
     this.chapter4();
     this.grounds();
     this.easeSlideHandoffs();
+    this.bridgeCh2ToCh3();
     this.bridgeCh3ToCh4();
     window.ScrollTrigger.refresh();
   }
 
-  // Soft landing between campaign pin release and network pin — kills the downward yank.
-  bridgeCh3ToCh4() {
-    const ch3 = this.q('[data-ch3]');
-    const ch4 = this.q('[data-ch4]');
-    if (!ch3 || !ch4) return;
-    let bridge = this.q('[data-pin-bridge="ch3-ch4"]');
+  ensureBridge(id, afterEl, heightPx, gradient) {
+    if (!afterEl) return null;
+    let bridge = this.q('[data-pin-bridge="' + id + '"]');
     if (!bridge) {
       bridge = document.createElement('div');
-      bridge.setAttribute('data-pin-bridge', 'ch3-ch4');
-      ch3.after(bridge);
+      bridge.setAttribute('data-pin-bridge', id);
+      afterEl.after(bridge);
     }
-    const h = Math.round(window.innerHeight * (this.isTouch ? 0.55 : 0.28));
     bridge.style.cssText = [
-      'height:' + h + 'px',
+      'height:' + heightPx + 'px',
       'margin:0',
       'padding:0',
       'pointer-events:none',
-      'background:linear-gradient(180deg,#F4F0E7 0%,#0A1526 100%)'
+      'background:' + gradient
     ].join(';');
+    return bridge;
+  }
+
+  bridgeCh2ToCh3() {
+    const ch2 = this.q('[data-ch2]');
+    if (!ch2) return;
+    const h = Math.round(window.innerHeight * (this.isTouch ? 0.4 : 0.2));
+    this.ensureBridge('ch2-ch3', ch2, h, 'linear-gradient(180deg,#0A1526 0%,#F4F0E7 100%)');
+  }
+
+  // Soft landing between campaign release and network — kills the downward yank.
+  bridgeCh3ToCh4() {
+    const ch3 = this.q('[data-ch3]');
+    if (!ch3) return;
+    const h = Math.round(window.innerHeight * (this.isTouch ? 0.55 : 0.28));
+    this.ensureBridge('ch3-ch4', ch3, h, 'linear-gradient(180deg,#F4F0E7 0%,#0A1526 100%)');
   }
 
   // The template is authored as a readable flowing page; pinning needs each
@@ -749,13 +763,13 @@ class Component extends DCLogic {
       sec.style.overflow = 'hidden';
     };
 
-    // Touch: sticky only for vertical story pins. ch3 (horizontal) + ch4 (network)
-    // stay on classic viewport pins — sticky stages break their layouts.
+    // Touch: sticky for vertical story + sticky road for ch3 (no GSAP pin —
+    // pin was auto-docking the campaign onto the screen mid slide-2).
     if (this.isTouch) {
       this.touchStickyStage(this.q('[data-scene]'), 1 + (this.cfg.lengthVh || 1.5));
       this.touchStickyStage(this.q('[data-close]'), 3.2);
       this.touchStickyStage(this.q('[data-ch2]'), 3.6);
-      viewport(this.q('[data-ch3]'));
+      // ch3 height/overflow owned by chapter3Touch()
       viewport(this.q('[data-ch4]'));
     } else {
       viewport(this.q('[data-close]'));
@@ -814,18 +828,17 @@ class Component extends DCLogic {
     });
 
     const ch3 = this.q('[data-ch3]');
-    if (ch3) {
-      // overflow-x:auto breaks position:fixed pins on iOS — force clip.
+    if (ch3 && !this.isTouch) {
+      // Desktop pin needs overflow clip.
       ch3.style.overflow = 'hidden';
       ch3.style.overflowX = 'hidden';
       ch3.style.overflowY = 'hidden';
     }
     if (ch3 && this.isTouch) {
-      const track = this.q('[data-ch3-track]');
-      if (track) {
-        track.style.height = shellH + 'px';
-        track.style.minHeight = shellH + 'px';
-      }
+      // Sticky road needs overflow visible on the section; clip lives on the track.
+      ch3.style.overflow = 'visible';
+      ch3.style.overflowX = 'visible';
+      ch3.style.overflowY = 'visible';
       const svg = this.q('[data-ch3-svg]');
       if (svg) {
         svg.style.top = '55%';
@@ -1049,29 +1062,26 @@ class Component extends DCLogic {
       return;
     }
 
-    // iOS: overflow / native sideways scroll must not steal the pin.
-    sec.style.overflow = 'hidden';
-    sec.style.touchAction = 'pan-y';
     if (this.isTouch) {
-      const h = window.innerHeight;
-      sec.style.height = h + 'px';
-      track.style.height = h + 'px';
+      this.chapter3Touch(g, sec, track, path, cards, dots);
+      return;
     }
 
+    // Desktop: classic GSAP pin
+    sec.style.overflow = 'hidden';
+    sec.style.touchAction = 'pan-y';
+
     const travel = () => Math.max(window.innerWidth * 2.5, track.scrollWidth - window.innerWidth);
-    // Extra pin distance after the road finishes — unpin won't slam into ch4.
-    const settle = () => Math.round(window.innerHeight * (this.isTouch ? 0.75 : 0.4));
+    const settle = () => Math.round(window.innerHeight * 0.4);
     g.set(cards, { opacity: 0, y: 30 });
     g.set(dots, { scale: 0 });
 
-    // Draw the road line even if DrawSVGPlugin is missing.
     let usePlugin = !!(window.DrawSVGPlugin && path);
     let pathLen = 0;
     if (path) {
       try { pathLen = path.getTotalLength(); } catch (e) { pathLen = 0; }
-      if (usePlugin) {
-        g.set(path, { drawSVG: '0%' });
-      } else if (pathLen) {
+      if (usePlugin) g.set(path, { drawSVG: '0%' });
+      else if (pathLen) {
         path.style.strokeDasharray = String(pathLen);
         path.style.strokeDashoffset = String(pathLen);
       }
@@ -1084,18 +1094,73 @@ class Component extends DCLogic {
         end: () => '+=' + (travel() + settle()),
         invalidateOnRefresh: true,
         forcePin: true,
-        // pinReparent jerks hard on iOS when the pin releases into ch4
         pinType: 'fixed',
         anticipatePin: 0
       })
     });
-    // Road finishes ~75% through the pin; last quarter is a soft hold before release.
     tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 0.72 }, 0.04);
-    if (path && usePlugin) {
-      tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.7 }, 0.06);
-    } else if (path && pathLen) {
-      tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 0.7 }, 0.06);
+    if (path && usePlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.7 }, 0.06);
+    else if (path && pathLen) tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 0.7 }, 0.06);
+    [0.2, 0.4, 0.56].forEach((at, i) => {
+      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.1, ease: 'power2.out' }, at)
+        .to(dots[i], { scale: 1, duration: 0.08, ease: 'back.out(2)' }, at + 0.02);
+    });
+    this.keep(tl);
+  }
+
+  // iPhone/iPad: sticky track + tall section — no GSAP pin, so it won't
+  // auto-dock onto the screen while the user is still on slide 2.
+  chapter3Touch(g, sec, track, path, cards, dots) {
+    const shellH = window.innerHeight;
+    const travel = () => Math.max(window.innerWidth * 2.5, track.scrollWidth - window.innerWidth);
+    const settle = () => Math.round(shellH * 0.55);
+
+    sec.style.touchAction = 'pan-y';
+    sec.style.overflow = 'visible';
+    sec.style.height = (shellH + travel() + settle()) + 'px';
+    sec.style.minHeight = '0';
+    sec.style.backgroundColor = '#F4F0E7';
+
+    track.style.position = 'sticky';
+    track.style.top = '0';
+    track.style.left = '0';
+    track.style.width = '100%';
+    track.style.height = shellH + 'px';
+    track.style.minHeight = shellH + 'px';
+    track.style.overflow = 'hidden';
+    track.style.boxSizing = 'border-box';
+    track.style.backgroundColor = '#F4F0E7';
+    track.style.willChange = 'transform';
+
+    g.set(cards, { opacity: 0, y: 24 });
+    g.set(dots, { scale: 0 });
+    g.set(track, { x: 0 });
+
+    let usePlugin = !!(window.DrawSVGPlugin && path);
+    let pathLen = 0;
+    if (path) {
+      try { pathLen = path.getTotalLength(); } catch (e) { pathLen = 0; }
+      if (usePlugin) g.set(path, { drawSVG: '0%' });
+      else if (pathLen) {
+        path.style.strokeDasharray = String(pathLen);
+        path.style.strokeDashoffset = String(pathLen);
+      }
     }
+
+    const tl = g.timeline({
+      scrollTrigger: {
+        trigger: sec,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: this.scrubValue(),
+        invalidateOnRefresh: true,
+        pin: false
+      }
+    });
+    // Finish the road before the sticky releases; last stretch is a soft hold.
+    tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 0.7 }, 0.05);
+    if (path && usePlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.68 }, 0.06);
+    else if (path && pathLen) tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 0.68 }, 0.06);
     [0.2, 0.4, 0.56].forEach((at, i) => {
       tl.to(cards[i], { opacity: 1, y: 0, duration: 0.1, ease: 'power2.out' }, at)
         .to(dots[i], { scale: 1, duration: 0.08, ease: 'back.out(2)' }, at + 0.02);
