@@ -731,8 +731,13 @@ class Component extends DCLogic {
     if (!bridge) {
       bridge = document.createElement('div');
       bridge.setAttribute('data-pin-bridge', id);
-      afterEl.after(bridge);
     }
+    // Never place bridges inside a pin-spacer — that shifts fixed pin top
+    // by the bridge height (e.g. close stuck at top: 254px).
+    const anchor = (afterEl.parentElement && afterEl.parentElement.classList.contains('pin-spacer'))
+      ? afterEl.parentElement
+      : afterEl;
+    if (bridge.previousElementSibling !== anchor) anchor.after(bridge);
     bridge.style.cssText = [
       'height:' + heightPx + 'px',
       'margin:0',
