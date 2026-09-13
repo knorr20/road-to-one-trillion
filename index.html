@@ -583,37 +583,41 @@ class Component extends DCLogic {
     };
   }
 
-  // Desktop uses +=% pin distance; touch uses tall sticky section bounds.
-  scrollSpan(sec, desktopEnd) {
-    if (this.isTouch) {
+  // Desktop uses +=% pin distance; touch sticky stages use section bounds.
+  // forcePin chapters (ch3/ch4) always use the desktop-style end distance.
+  scrollSpan(sec, desktopEnd, forcePin = false) {
+    if (this.isTouch && !forcePin) {
       return { trigger: sec, start: 'top top', end: 'bottom bottom' };
     }
     return { trigger: sec, start: 'top top', end: desktopEnd };
   }
 
   scrubValue() {
-    // Longer lag = softer catch-up through slide boundaries and still dissolves.
-    if (this.isTouch) return 1.15;
-    return Math.max(0.55, (this.cfg && this.cfg.scrub) || 0.35);
+    // Keep mild — heavy scrub skips short beats (ch3 cards, still dissolves).
+    if (this.isTouch) return 0.4;
+    return (this.cfg && this.cfg.scrub) || 0.35;
   }
 
-  // Desktop: GSAP pin. Touch: no pin — sticky inners + tall sections (lockScenes)
-  // so slide→slide is normal document flow instead of pin/unpin thrash.
+  // Desktop / forced pins: GSAP pin. Touch story slides: sticky (see lockScenes).
+  // forcePin: true keeps horizontal/network chapters on real pins (sticky breaks them).
   pinScroll(extra = {}) {
-    const touch = this.isTouch;
-    if (touch) {
+    const forcePin = !!extra.forcePin;
+    const opts = Object.assign({}, extra);
+    delete opts.forcePin;
+    const stickyTouch = this.isTouch && !forcePin;
+    if (stickyTouch) {
       return Object.assign({
         pin: false,
         scrub: this.scrubValue(),
         invalidateOnRefresh: true
-      }, extra);
+      }, opts);
     }
     return Object.assign({
       pin: true,
-      anticipatePin: 1,
+      anticipatePin: this.isTouch ? 0 : 1,
       pinType: 'fixed',
       scrub: this.scrubValue()
-    }, extra);
+    }, opts);
   }
 
   // Wrap section children in a sticky viewport shell; section itself becomes tall.
@@ -644,19 +648,15 @@ class Component extends DCLogic {
     return stage;
   }
 
-  // Soft dissolve between major slides (navy veil peaks at the handoff).
+  // Soft dissolve between major slides. Keep it light so content stays readable.
   easeSlideHandoffs() {
     if (this.reduced) return;
     const g = window.gsap;
     const root = this.rootRef && this.rootRef.current;
     if (!root) return;
-    let veil = root.querySelector('[data-slide-veil]');
-    if (!veil) {
-      veil = document.createElement('div');
-      veil.setAttribute('data-slide-veil', '');
-      veil.style.cssText = 'position:fixed;inset:0;z-index:42;pointer-events:none;background:#0A1526;opacity:0;';
-      root.appendChild(veil);
-    }
+    root.querySelectorAll('[data-slide-veil-layer]').forEach((n) => n.remove());
+    const old = root.querySelector('[data-slide-veil]');
+    if (old) old.remove();
     const secs = [
       this.q('[data-scene]'),
       this.q('[data-close]'),
@@ -665,19 +665,25 @@ class Component extends DCLogic {
       this.q('[data-ch4]'),
       this.q('[data-finale]')
     ].filter(Boolean);
-    const scrub = this.isTouch ? 1.25 : 0.7;
+    const scrub = this.isTouch ? 0.55 : 0.45;
     for (let i = 0; i < secs.length - 1; i++) {
       const next = secs[i + 1];
+      const bg = getComputedStyle(next).backgroundColor || '#0A1526';
+      const layer = document.createElement('div');
+      layer.setAttribute('data-slide-veil-layer', '');
+      layer.style.cssText = 'position:fixed;inset:0;z-index:42;pointer-events:none;opacity:0;background:' + bg + ';';
+      root.appendChild(layer);
       const tl = g.timeline({
         scrollTrigger: {
           trigger: next,
-          start: 'top 92%',
-          end: 'top 8%',
+          start: 'top 88%',
+          end: 'top 12%',
           scrub
         }
       });
-      tl.fromTo(veil, { opacity: 0 }, { opacity: this.isTouch ? 0.72 : 0.48, ease: 'none', duration: 0.42 }, 0)
-        .to(veil, { opacity: 0, ease: 'none', duration: 0.58 }, 0.42);
+      // Peak opacity stays low — heavy navy veil made bone/campaign slides look blank.
+      tl.fromTo(layer, { opacity: 0 }, { opacity: 0.28, ease: 'none', duration: 0.4 }, 0)
+        .to(layer, { opacity: 0, ease: 'none', duration: 0.6 }, 0.4);
       this.keep(tl);
     }
   }
@@ -719,15 +725,14 @@ class Component extends DCLogic {
       sec.style.overflow = 'hidden';
     };
 
-    // Touch: tall sections + sticky stage (no GSAP pin handoffs between slides).
-    // Desktop: classic 100vh pin targets.
+    // Touch: sticky only for vertical story pins. ch3 (horizontal) + ch4 (network)
+    // stay on classic viewport pins — sticky stages break their layouts.
     if (this.isTouch) {
       this.touchStickyStage(this.q('[data-scene]'), 1 + (this.cfg.lengthVh || 1.5));
       this.touchStickyStage(this.q('[data-close]'), 3.2);
       this.touchStickyStage(this.q('[data-ch2]'), 3.6);
-      // ch3 length depends on horizontal travel — set a safe minimum; chapter3() refines it.
-      this.touchStickyStage(this.q('[data-ch3]'), 3.2);
-      this.touchStickyStage(this.q('[data-ch4]'), 3.8);
+      viewport(this.q('[data-ch3]'));
+      viewport(this.q('[data-ch4]'));
     } else {
       viewport(this.q('[data-close]'));
       viewport(this.q('[data-ch2]'));
@@ -1004,31 +1009,25 @@ class Component extends DCLogic {
     }
 
     const travel = () => Math.max(0, track.scrollWidth - window.innerWidth);
-    if (this.isTouch) {
-      // Match sticky section height to horizontal travel distance.
-      const shellH = window.innerHeight;
-      sec.style.height = (shellH + travel()) + 'px';
-    }
     g.set(cards, { opacity: 0, y: 30 });
     g.set(dots, { scale: 0 });
     if (window.DrawSVGPlugin) g.set(path, { drawSVG: '0%' });
 
     const tl = g.timeline({
-      scrollTrigger: this.pinScroll(Object.assign(
-        this.isTouch
-          ? { trigger: sec, start: 'top top', end: 'bottom bottom' }
-          : { trigger: sec, start: 'top top', end: () => '+=' + travel() },
-        {
-          invalidateOnRefresh: true,
-          snap: this.magneticSnap([0.04, 0.22, 0.46, 0.70, 0.92], 0.08)
-        }
-      ))
+      scrollTrigger: this.pinScroll({
+        trigger: sec,
+        start: 'top top',
+        end: () => '+=' + travel(),
+        invalidateOnRefresh: true,
+        forcePin: true,
+        snap: this.magneticSnap([0.04, 0.22, 0.46, 0.70, 0.92], 0.08)
+      })
     });
     tl.to(track, { x: () => -travel(), ease: 'none', duration: 1 }, 0);
     if (window.DrawSVGPlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.92 }, 0.04);
     [0.2, 0.44, 0.68].forEach((at, i) => {
-      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.07, ease: 'power2.out' }, at)
-        .to(dots[i], { scale: 1, duration: 0.05, ease: 'back.out(2)' }, at + 0.02);
+      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, at)
+        .to(dots[i], { scale: 1, duration: 0.08, ease: 'back.out(2)' }, at + 0.02);
     });
     this.keep(tl);
   }
@@ -1125,8 +1124,9 @@ class Component extends DCLogic {
     const order = els.map((e, i) => i);
     const tl = g.timeline({
       scrollTrigger: this.pinScroll(Object.assign(
-        this.scrollSpan(sec, '+=280%'),
+        this.scrollSpan(sec, '+=280%', true),
         {
+          forcePin: true,
           snap: this.magneticSnap([0.08, 0.18, 0.40, 0.64, 0.92], 0.08),
           onEnter: () => this.sim && this.sim.alpha(0.7).restart(),
           onLeave: () => this.sim && this.sim.stop(),
