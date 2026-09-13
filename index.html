@@ -667,7 +667,10 @@ class Component extends DCLogic {
     ].filter(Boolean);
     const scrub = this.isTouch ? 0.55 : 0.45;
     for (let i = 0; i < secs.length - 1; i++) {
+      const prev = secs[i];
       const next = secs[i + 1];
+      // ch3→ch4 has its own gradient bridge; a veil there felt like a yank.
+      if (prev.hasAttribute('data-ch3') && next.hasAttribute('data-ch4')) continue;
       const bg = getComputedStyle(next).backgroundColor || '#0A1526';
       const layer = document.createElement('div');
       layer.setAttribute('data-slide-veil-layer', '');
@@ -681,8 +684,7 @@ class Component extends DCLogic {
           scrub
         }
       });
-      // Peak opacity stays low — heavy navy veil made bone/campaign slides look blank.
-      tl.fromTo(layer, { opacity: 0 }, { opacity: 0.28, ease: 'none', duration: 0.4 }, 0)
+      tl.fromTo(layer, { opacity: 0 }, { opacity: 0.22, ease: 'none', duration: 0.4 }, 0)
         .to(layer, { opacity: 0, ease: 'none', duration: 0.6 }, 0.4);
       this.keep(tl);
     }
@@ -708,7 +710,29 @@ class Component extends DCLogic {
     this.chapter4();
     this.grounds();
     this.easeSlideHandoffs();
+    this.bridgeCh3ToCh4();
     window.ScrollTrigger.refresh();
+  }
+
+  // Soft landing between campaign pin release and network pin — kills the downward yank.
+  bridgeCh3ToCh4() {
+    const ch3 = this.q('[data-ch3]');
+    const ch4 = this.q('[data-ch4]');
+    if (!ch3 || !ch4) return;
+    let bridge = this.q('[data-pin-bridge="ch3-ch4"]');
+    if (!bridge) {
+      bridge = document.createElement('div');
+      bridge.setAttribute('data-pin-bridge', 'ch3-ch4');
+      ch3.after(bridge);
+    }
+    const h = Math.round(window.innerHeight * (this.isTouch ? 0.55 : 0.28));
+    bridge.style.cssText = [
+      'height:' + h + 'px',
+      'margin:0',
+      'padding:0',
+      'pointer-events:none',
+      'background:linear-gradient(180deg,#F4F0E7 0%,#0A1526 100%)'
+    ].join(';');
   }
 
   // The template is authored as a readable flowing page; pinning needs each
@@ -1035,6 +1059,8 @@ class Component extends DCLogic {
     }
 
     const travel = () => Math.max(window.innerWidth * 2.5, track.scrollWidth - window.innerWidth);
+    // Extra pin distance after the road finishes — unpin won't slam into ch4.
+    const settle = () => Math.round(window.innerHeight * (this.isTouch ? 0.75 : 0.4));
     g.set(cards, { opacity: 0, y: 30 });
     g.set(dots, { scale: 0 });
 
@@ -1055,23 +1081,23 @@ class Component extends DCLogic {
       scrollTrigger: this.pinScroll({
         trigger: sec,
         start: 'top top',
-        end: () => '+=' + Math.max(travel(), window.innerHeight * 2.2),
+        end: () => '+=' + (travel() + settle()),
         invalidateOnRefresh: true,
         forcePin: true,
-        pinReparent: this.isTouch,
+        // pinReparent jerks hard on iOS when the pin releases into ch4
         pinType: 'fixed',
         anticipatePin: 0
       })
     });
-    // Hold the opener briefly, then travel — avoids a clipped first frame.
-    tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 0.9 }, 0.06);
+    // Road finishes ~75% through the pin; last quarter is a soft hold before release.
+    tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 0.72 }, 0.04);
     if (path && usePlugin) {
-      tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.86 }, 0.08);
+      tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.7 }, 0.06);
     } else if (path && pathLen) {
-      tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 0.86 }, 0.08);
+      tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 0.7 }, 0.06);
     }
-    [0.22, 0.46, 0.68].forEach((at, i) => {
-      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, at)
+    [0.2, 0.4, 0.56].forEach((at, i) => {
+      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.1, ease: 'power2.out' }, at)
         .to(dots[i], { scale: 1, duration: 0.08, ease: 'back.out(2)' }, at + 0.02);
     });
     this.keep(tl);
@@ -1172,6 +1198,8 @@ class Component extends DCLogic {
         this.scrollSpan(sec, '+=280%', true),
         {
           forcePin: true,
+          pinType: 'fixed',
+          anticipatePin: 0,
           onEnter: () => this.sim && this.sim.alpha(0.7).restart(),
           onLeave: () => this.sim && this.sim.stop(),
           onLeaveBack: () => this.sim && this.sim.stop(),
