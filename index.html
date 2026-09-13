@@ -242,15 +242,24 @@
     text-justify: inter-word;
   }
   .t-display {
-    /* Definite measure — max-width alone shrink-wraps and over-breaks */
-    width: min(100%, var(--t-display, 20ch));
-    max-width: var(--t-display, 20ch);
+    /* Hug the composed lines; cap width so mobile doesn't overflow */
+    width: max-content;
+    max-width: min(100%, var(--t-display, 20ch));
+    margin-left: auto;
+    margin-right: auto;
     text-wrap: pretty;
   }
-  .t-line { display: block; white-space: nowrap; }
+  .t-line {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    white-space: nowrap;
+  }
   @media (max-width: 720px) {
-    .t-line { white-space: normal; }
-    .t-display { --t-display: min(var(--t-display, 20ch), 92vw); width: min(100%, 92vw); max-width: 92vw; }
+    .t-line { white-space: normal; width: auto; }
+    .t-display { width: min(100%, 92vw); max-width: 92vw; }
   }
   .t-lede {
     max-width: 48ch;
@@ -289,7 +298,7 @@
     <div data-dotfield="hero" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
     <div class="t-stack" style="position: relative; z-index: 1;">
       <h1 data-hero-head="" class="t-box t-center t-display" style="--t-display: 20ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(42px, 7.4vw, 132px); line-height: 1.0; letter-spacing: -0.025em; margin: 0;" data-bodoni="section"><span class="t-line">Core VC has a rare</span><span class="t-line">kind of ambition.</span></h1>
-      <p data-hero-lede="" class="t-box t-justify t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #C6CEDA; margin: 0;">Create <span class="t-em">one trillion dollars</span> in new wealth for everyday Americans. It is bold, it is measurable, and if achieved it changes the financial lives of millions of people.</p>
+      <p data-hero-lede="" class="t-box t-center t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #C6CEDA; margin: 0;">Create <span class="t-em">one trillion dollars</span> in new wealth for everyday Americans. It is bold, it is measurable, and if achieved it changes the financial lives of millions of people.</p>
     </div>
   </section>
 
@@ -323,7 +332,7 @@
       <div style="position: relative; width: 100%; max-width: 1500px; margin: 0 auto;">
         <div data-ch2-cap="title" class="t-stack" style="max-width: min(92vw, 1100px); margin-left: auto; margin-right: auto;">
           <div class="t-box t-center t-display" style="--t-display: 14ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(40px, 6.4vw, 116px); line-height: 0.98; letter-spacing: -0.028em;" data-bodoni="section"><span class="t-line">Turn the number</span><span class="t-line">into a story.</span></div>
-          <div class="t-box t-justify t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #E6E2D8; margin: 0;"><span class="t-em-italic">The Road to One Trillion</span> takes a once-in-a-generation pursuit and translates it into a documentary series that carries Core's message through the people, companies and ideas driving it forward.</div>
+          <div class="t-box t-center t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #E6E2D8; margin: 0;"><span class="t-em-italic">The Road to One Trillion</span> takes a once-in-a-generation pursuit and translates it into a documentary series that carries Core's message through the people, companies and ideas driving it forward.</div>
         </div>
         <div data-ch2-cap="0" style="margin-top: clamp(30px, 4.4vw, 64px); position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
           <div data-still-frame="" style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0A1526;">
@@ -346,7 +355,7 @@
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,21,38,0.08) 0%, rgba(10,21,38,0.55) 58%, rgba(10,21,38,0.9) 100%); pointer-events: none;"></div>
           <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: clamp(20px, 3vw, 40px); font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(28px, 4vw, 56px); line-height: 1.05; letter-spacing: -0.024em; max-width: min(92%, 36ch); color: #F4F0E7; text-shadow: 0 1px 18px rgba(10,21,38,0.55);" data-bodoni="card"><span class="t-line">Parents who no longer panic over every runny nose,</span><span class="t-line">because the insurance holds.</span></div>
         </div>
-        <div data-ch2-cap="made" class="t-box t-justify t-lede" style="margin-top: clamp(30px, 4.4vw, 64px); font-size: clamp(17px, 1.6vw, 24px); line-height: 1.55; color: #F4F0E7;">Nothing needs to be manufactured. The stakes, the characters and the challenge are already in place.</div>
+        <div data-ch2-cap="made" class="t-box t-center t-lede" style="margin-top: clamp(30px, 4.4vw, 64px); font-size: clamp(17px, 1.6vw, 24px); line-height: 1.55; color: #F4F0E7;">Nothing needs to be manufactured. The stakes, the characters and the challenge are already in place.</div>
         <div data-ch2-cap="close" class="t-box t-center t-display" style="--t-display: 22ch; margin-top: clamp(30px, 4.4vw, 64px); font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 4.8vw, 84px); line-height: 1.05; letter-spacing: -0.028em;" data-bodoni="section"><span class="t-line">Core has already begun writing</span><span class="t-line">an extraordinary story.</span><span class="t-line">Now it is time to <span class="t-em">share it</span>.</span></div>
       </div>
     </div>
@@ -355,11 +364,11 @@
   <section data-ch3="" data-ground="bone" style="position: relative; min-height: 100vh; overflow: visible; background-color: #F4F0E7; color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
     <div data-ch3-track="" style="position: relative; height: 100vh; display: flex; align-items: center; will-change: transform;">
       <svg data-ch3-svg="" viewBox="0 0 4000 400" preserveAspectRatio="none" style="position: absolute; left: 0; top: 58%; width: 400vw; height: 40vh; overflow: visible; pointer-events: none; z-index: 2;">
-        <path data-ch3-path="" d="M0,300 C 420,300 560,150 1000,150 C 1420,150 1560,270 2000,250 C 2440,230 2560,110 3000,120 C 3420,130 3620,210 4000,190" fill="none" stroke="#0A1526" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+        <path data-ch3-path="" d="M0,300 C 420,300 560,150 1000,150 C 1420,150 1560,270 2000,250 C 2440,230 2560,110 3000,120 C 3420,130 3620,210 4000,190" fill="none" stroke="#0A1526" stroke-width="3.5" stroke-linecap="round"></path>
       </svg>
       <div style="flex: 0 0 100vw; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(22px, 2.5vw, 36px); padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box; position: relative;">
         <div class="t-box t-center t-display" style="--t-display: 18ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(38px, 6vw, 108px); line-height: 0.98; letter-spacing: -0.028em;" data-bodoni="section"><span class="t-line">The first film is only</span><span class="t-line">the beginning.</span></div>
-        <div class="t-box t-justify t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #2C3949; margin: 0;">An ongoing documentary campaign, not a single film. More than talking heads describing a better future. We follow the people building it, go inside the companies taking on America's hardest problems, and show what is working, what isn't, and how far there is still to go.</div>
+        <div class="t-box t-center t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #2C3949; margin: 0;">An ongoing documentary campaign, not a single film. More than talking heads describing a better future. We follow the people building it, go inside the companies taking on America's hardest problems, and show what is working, what isn't, and how far there is still to go.</div>
       </div>
       <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box;">
         <div data-ch3-card="" class="t-card-gap" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column;">
@@ -431,7 +440,7 @@
   <section data-finale="" data-ground="bone" style="position: relative; min-height: 100vh; background-color: #F4F0E7; color: #0A1526; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(28px, 3.5vw, 48px); padding: 140px clamp(20px, 3.4vw, 52px) 180px; box-sizing: border-box; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
     <div class="t-box t-center t-display" style="--t-display: 34ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(32px, 4.6vw, 82px); line-height: 1.0; letter-spacing: -0.024em;" data-bodoni="section"><span class="t-line">Every story creates another opportunity</span><span class="t-line">to build the network.</span></div>
     <div class="t-stack" style="max-width: 48ch;">
-      <div class="t-box t-justify t-lede" style="font-size: clamp(16px, 1.3vw, 19px); color: #2C3949; margin: 0;">A thirty-minute conversation, and a first chapter as a <span class="t-em">pilot</span> before anything larger is committed.</div>
+      <div class="t-box t-center t-lede" style="font-size: clamp(16px, 1.3vw, 19px); color: #2C3949; margin: 0;">A thirty-minute conversation, and a first chapter as a <span class="t-em">pilot</span> before anything larger is committed.</div>
       <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #8A6410; text-align: center;">THE ASK · PILOT CHAPTER</div>
     </div>
   </section>
@@ -582,7 +591,23 @@ class Component extends DCLogic {
 
     const head = this.q('[data-hero-head]'), lede = this.q('[data-hero-lede]');
     if (head && !this.reduced) {
-      if (window.SplitText) {
+      // Prefer explicit .t-line spans — SplitText fights nested line markup and
+      // can scatter glyphs during the intro mask animation.
+      const manualLines = head.querySelectorAll('.t-line');
+      if (manualLines.length) {
+        manualLines.forEach((line) => {
+          if (line.parentElement && line.parentElement.hasAttribute('data-line-mask')) return;
+          const mask = document.createElement('div');
+          mask.setAttribute('data-line-mask', '');
+          mask.style.overflow = 'hidden';
+          mask.style.display = 'block';
+          line.parentNode.insertBefore(mask, line);
+          mask.appendChild(line);
+        });
+        g.from(manualLines, {
+          yPercent: 118, duration: 1.15, stagger: 0.085, ease: 'power3.out', delay: 0.12
+        });
+      } else if (window.SplitText) {
         const split = new window.SplitText(head, { type: 'lines', mask: 'lines' });
         g.from(split.lines, {
           yPercent: 118, duration: 1.15, stagger: 0.085, ease: 'power3.out', delay: 0.12,
@@ -1123,12 +1148,14 @@ class Component extends DCLogic {
         anticipatePin: 0
       })
     });
-    tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 0.72 }, 0.04);
-    if (path && usePlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.7 }, 0.06);
-    else if (path && pathLen) tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 0.7 }, 0.06);
-    [0.2, 0.4, 0.56].forEach((at, i) => {
-      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.1, ease: 'power2.out' }, at)
-        .to(dots[i], { scale: 1, duration: 0.08, ease: 'back.out(2)' }, at + 0.02);
+    // Keep drawSVG locked 1:1 with horizontal travel. If the stroke lags the
+    // track translate, the drawn tip exits left and the road looks like it vanished.
+    tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 1 }, 0);
+    if (path && usePlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 1 }, 0);
+    else if (path && pathLen) tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 1 }, 0);
+    [0.22, 0.45, 0.65].forEach((at, i) => {
+      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.08, ease: 'power2.out' }, at)
+        .to(dots[i], { scale: 1, duration: 0.07, ease: 'back.out(2)' }, at + 0.02);
     });
     this.keep(tl);
   }
@@ -1208,12 +1235,13 @@ class Component extends DCLogic {
         onRefreshInit: applyHeight
       }
     });
-    tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 0.7 }, 0.05);
-    if (path && usePlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.68 }, 0.06);
-    else if (path && pathLen) tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 0.68 }, 0.06);
-    [0.2, 0.4, 0.56].forEach((at, i) => {
-      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.1, ease: 'power2.out' }, at)
-        .to(dots[i], { scale: 1, duration: 0.08, ease: 'back.out(2)' }, at + 0.02);
+    // Same 1:1 draw/travel lock as desktop — lag makes the stroke tip exit left.
+    tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 1 }, 0);
+    if (path && usePlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 1 }, 0);
+    else if (path && pathLen) tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 1 }, 0);
+    [0.22, 0.45, 0.65].forEach((at, i) => {
+      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.08, ease: 'power2.out' }, at)
+        .to(dots[i], { scale: 1, duration: 0.07, ease: 'back.out(2)' }, at + 0.02);
     });
     this.keep(tl);
   }
