@@ -510,13 +510,13 @@ class Component extends DCLogic {
     // iOS URL bar resize + pin refresh causes scroll jumps; ignore those resizes.
     window.ScrollTrigger.config({ ignoreMobileResize: true, autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load' });
 
-    // Touch: native scroll only. Lenis + pin handoffs shake the viewport on iOS.
-    // normalizeScroll keeps pin↔pin transitions on the JS thread (no back/forth jitter).
+    // Touch: no Lenis. Also skip normalizeScroll — it was still producing
+    // hard cuts at pin boundaries; we use sticky stages instead (see lockScenes).
     if (this.isTouch && !this.reduced) {
       if (window.__lenis) { try { window.__lenis.destroy(); } catch (e) {} window.__lenis = null; }
       if (window.__lenisRaf) { try { g.ticker.remove(window.__lenisRaf); } catch (e) {} window.__lenisRaf = null; }
       this.lenis = null;
-      try { window.ScrollTrigger.normalizeScroll(true); } catch (e) {}
+      try { window.ScrollTrigger.normalizeScroll(false); } catch (e) {}
     } else if (!this.reduced && !this.lenis) {
       if (window.__lenis) { try { window.__lenis.destroy(); } catch (e) {} }
       if (window.__lenisRaf) g.ticker.remove(window.__lenisRaf);
@@ -583,23 +583,64 @@ class Component extends DCLogic {
     };
   }
 
-  // Soften scrub on touch so pin beats still feel paced without snap anchors.
+  // Desktop uses +=% pin distance; touch uses tall sticky section bounds.
+  scrollSpan(sec, desktopEnd) {
+    if (this.isTouch) {
+      return { trigger: sec, start: 'top top', end: 'bottom bottom' };
+    }
+    return { trigger: sec, start: 'top top', end: desktopEnd };
+  }
+
   scrubValue() {
-    if (this.isTouch) return Math.max(0.65, (this.cfg && this.cfg.scrub) || 0.35);
+    if (this.isTouch) return Math.max(0.85, (this.cfg && this.cfg.scrub) || 0.35);
     return (this.cfg && this.cfg.scrub) || 0.35;
   }
 
-  // Shared pin settings — anticipatePin on iOS causes slide-to-slide shake.
+  // Desktop: GSAP pin. Touch: no pin — sticky inners + tall sections (lockScenes)
+  // so slide→slide is normal document flow instead of pin/unpin thrash.
   pinScroll(extra = {}) {
     const touch = this.isTouch;
+    if (touch) {
+      return Object.assign({
+        pin: false,
+        scrub: this.scrubValue(),
+        invalidateOnRefresh: true
+      }, extra);
+    }
     return Object.assign({
       pin: true,
-      anticipatePin: touch ? 0 : 1,
+      anticipatePin: 1,
       pinType: 'fixed',
-      scrub: this.scrubValue(),
-      fastScrollEnd: touch,
-      preventOverlaps: true
+      scrub: this.scrubValue()
     }, extra);
+  }
+
+  // Wrap section children in a sticky viewport shell; section itself becomes tall.
+  touchStickyStage(sec, scrollVh) {
+    if (!sec || !this.isTouch) return;
+    const shellH = window.innerHeight;
+    let stage = sec.querySelector(':scope > [data-touch-stage]');
+    if (!stage) {
+      stage = document.createElement('div');
+      stage.setAttribute('data-touch-stage', '');
+      while (sec.firstChild) stage.appendChild(sec.firstChild);
+      sec.appendChild(stage);
+    }
+    stage.style.position = 'sticky';
+    stage.style.top = '0';
+    stage.style.left = '0';
+    stage.style.right = '0';
+    stage.style.width = '100%';
+    stage.style.height = shellH + 'px';
+    stage.style.minHeight = shellH + 'px';
+    stage.style.overflow = 'hidden';
+    stage.style.boxSizing = 'border-box';
+    // Keep the held frame filled — section bg scrolls away under sticky.
+    stage.style.backgroundColor = getComputedStyle(sec).backgroundColor || '';
+    sec.style.height = (scrollVh * shellH) + 'px';
+    sec.style.minHeight = '0';
+    sec.style.overflow = 'visible';
+    return stage;
   }
 
   build() {
@@ -629,8 +670,8 @@ class Component extends DCLogic {
   lockScenes() {
     const g = window.gsap;
     const pad = 'clamp(20px, 3.4vw, 52px)';
-    // Pixel height on touch — 100vh jumps when the iOS URL bar shows/hides.
-    const vh = this.isTouch ? (window.innerHeight + 'px') : '100vh';
+    const shellH = window.innerHeight;
+    const vh = this.isTouch ? (shellH + 'px') : '100vh';
     const viewport = (sec) => {
       if (!sec) return;
       sec.style.height = vh;
@@ -638,15 +679,39 @@ class Component extends DCLogic {
       sec.style.overflow = 'hidden';
     };
 
-    viewport(this.q('[data-close]'));
+    // Touch: tall sections + sticky stage (no GSAP pin handoffs between slides).
+    // Desktop: classic 100vh pin targets.
+    if (this.isTouch) {
+      this.touchStickyStage(this.q('[data-scene]'), 1 + (this.cfg.lengthVh || 1.5));
+      this.touchStickyStage(this.q('[data-close]'), 3.2);
+      this.touchStickyStage(this.q('[data-ch2]'), 3.6);
+      // ch3 length depends on horizontal travel — set a safe minimum; chapter3() refines it.
+      this.touchStickyStage(this.q('[data-ch3]'), 3.2);
+      this.touchStickyStage(this.q('[data-ch4]'), 3.8);
+    } else {
+      viewport(this.q('[data-close]'));
+      viewport(this.q('[data-ch2]'));
+      viewport(this.q('[data-ch3]'));
+      viewport(this.q('[data-ch4]'));
+      const scene = this.q('[data-scene]');
+      if (scene) { scene.style.height = '100vh'; scene.style.overflow = 'hidden'; }
+    }
+
     const cpad = this.q('[data-close-pad]');
-    if (cpad) { cpad.style.position = 'absolute'; cpad.style.inset = '0'; cpad.style.minHeight = '0'; }
+    if (cpad) {
+      cpad.style.position = 'absolute';
+      cpad.style.inset = '0';
+      cpad.style.minHeight = '0';
+    }
     const question = this.q('[data-beat="question"]');
     if (question) g.set(question, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, padding: '120px ' + pad + ' 150px', boxSizing: 'border-box' });
 
-    viewport(this.q('[data-ch2]'));
     const p2 = this.q('[data-ch2-pad]');
-    if (p2) { p2.style.position = 'absolute'; p2.style.inset = '0'; p2.style.minHeight = '0'; }
+    if (p2) {
+      p2.style.position = 'absolute';
+      p2.style.inset = '0';
+      p2.style.minHeight = '0';
+    }
     // Still cards share one fixed stage so hard-cuts don't jump.
     ['0', '1', '2'].forEach((k) => {
       const el = this.q('[data-ch2-cap="' + k + '"]');
@@ -680,12 +745,24 @@ class Component extends DCLogic {
     });
 
     const ch3 = this.q('[data-ch3]');
-    viewport(ch3);
-    if (ch3) ch3.style.overflowX = 'hidden';
+    if (ch3 && !this.isTouch) ch3.style.overflowX = 'hidden';
+    if (ch3 && this.isTouch) {
+      ch3.style.overflowX = 'hidden';
+      const track = this.q('[data-ch3-track]');
+      if (track) {
+        track.style.height = '100%';
+        track.style.minHeight = '0';
+      }
+    }
 
-    viewport(this.q('[data-ch4]'));
     const col = this.q('[data-ch4-col]');
-    if (col) { col.style.position = 'absolute'; col.style.left = '0'; col.style.top = '0'; col.style.height = '100%'; col.style.minHeight = '0'; }
+    if (col) {
+      col.style.position = 'absolute';
+      col.style.left = '0';
+      col.style.top = '0';
+      col.style.height = '100%';
+      col.style.minHeight = '0';
+    }
     this.qa('[data-benefit]').forEach(b => g.set(b, { position: 'absolute', left: 0, top: 0, marginBottom: 0 }));
   }
 
@@ -760,11 +837,10 @@ class Component extends DCLogic {
     g.set(meta, { opacity: 0 });
 
     const tl = g.timeline({
-      scrollTrigger: this.pinScroll({
-        trigger: scene, start: 'top top', end: '+=' + (this.cfg.lengthVh * 100) + '%',
-        invalidateOnRefresh: true,
-        snap: this.magneticSnap([0, 0.72, 1], 0.1)
-      })
+      scrollTrigger: this.pinScroll(Object.assign(
+        this.scrollSpan(scene, '+=' + (this.cfg.lengthVh * 100) + '%'),
+        { invalidateOnRefresh: true, snap: this.magneticSnap([0, 0.72, 1], 0.1) }
+      ))
     });
     tl.fromTo(word, { scale: s0, x: () => 0.1 * window.innerWidth }, { scale: s1, x: 0, ease: 'power2.out', duration: 0.72 }, 0)
       .fromTo(fill, { scaleX: 0 }, { scaleX: 0.415, ease: 'none', duration: 0.26 }, 0.54)
@@ -789,10 +865,10 @@ class Component extends DCLogic {
     }
     g.set([people, number, question], { opacity: 0, y: 26 });
     const tl = g.timeline({
-      scrollTrigger: this.pinScroll({
-        trigger: sec, start: 'top top', end: '+=220%',
-        snap: this.magneticSnap([0.12, 0.46, 0.78, 1], 0.09)
-      })
+      scrollTrigger: this.pinScroll(Object.assign(
+        this.scrollSpan(sec, '+=220%'),
+        { snap: this.magneticSnap([0.12, 0.46, 0.78, 1], 0.09) }
+      ))
     });
     // Sequential beats: people+number hold, then hand off to the question
     // without a blank frame or readable triple-overlap.
@@ -846,10 +922,10 @@ class Component extends DCLogic {
     };
 
     const tl = g.timeline({
-      scrollTrigger: this.pinScroll({
-        trigger: sec, start: 'top top', end: '+=260%',
-        snap: this.magneticSnap([0.06, 0.25, 0.43, 0.61, 0.78, 0.95], 0.075)
-      })
+      scrollTrigger: this.pinScroll(Object.assign(
+        this.scrollSpan(sec, '+=260%'),
+        { snap: this.magneticSnap([0.06, 0.25, 0.43, 0.61, 0.78, 0.95], 0.075) }
+      ))
     });
 
     tl.to(title, { opacity: 0, duration: 0.05, ease: 'none' }, 0.14);
@@ -895,16 +971,25 @@ class Component extends DCLogic {
     }
 
     const travel = () => Math.max(0, track.scrollWidth - window.innerWidth);
+    if (this.isTouch) {
+      // Match sticky section height to horizontal travel distance.
+      const shellH = window.innerHeight;
+      sec.style.height = (shellH + travel()) + 'px';
+    }
     g.set(cards, { opacity: 0, y: 30 });
     g.set(dots, { scale: 0 });
     if (window.DrawSVGPlugin) g.set(path, { drawSVG: '0%' });
 
     const tl = g.timeline({
-      scrollTrigger: this.pinScroll({
-        trigger: sec, start: 'top top', end: () => '+=' + travel(),
-        invalidateOnRefresh: true,
-        snap: this.magneticSnap([0.04, 0.22, 0.46, 0.70, 0.92], 0.08)
-      })
+      scrollTrigger: this.pinScroll(Object.assign(
+        this.isTouch
+          ? { trigger: sec, start: 'top top', end: 'bottom bottom' }
+          : { trigger: sec, start: 'top top', end: () => '+=' + travel() },
+        {
+          invalidateOnRefresh: true,
+          snap: this.magneticSnap([0.04, 0.22, 0.46, 0.70, 0.92], 0.08)
+        }
+      ))
     });
     tl.to(track, { x: () => -travel(), ease: 'none', duration: 1 }, 0);
     if (window.DrawSVGPlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.92 }, 0.04);
@@ -1006,14 +1091,16 @@ class Component extends DCLogic {
     g.set(benefits, { opacity: 0 });
     const order = els.map((e, i) => i);
     const tl = g.timeline({
-      scrollTrigger: this.pinScroll({
-        trigger: sec, start: 'top top', end: '+=280%',
-        snap: this.magneticSnap([0.08, 0.18, 0.40, 0.64, 0.92], 0.08),
-        onEnter: () => this.sim && this.sim.alpha(0.7).restart(),
-        onLeave: () => this.sim && this.sim.stop(),
-        onLeaveBack: () => this.sim && this.sim.stop(),
-        onEnterBack: () => this.sim && this.sim.alpha(0.3).restart()
-      })
+      scrollTrigger: this.pinScroll(Object.assign(
+        this.scrollSpan(sec, '+=280%'),
+        {
+          snap: this.magneticSnap([0.08, 0.18, 0.40, 0.64, 0.92], 0.08),
+          onEnter: () => this.sim && this.sim.alpha(0.7).restart(),
+          onLeave: () => this.sim && this.sim.stop(),
+          onLeaveBack: () => this.sim && this.sim.stop(),
+          onEnterBack: () => this.sim && this.sim.alpha(0.3).restart()
+        }
+      ))
     });
 
     order.forEach((idx, k) => {
