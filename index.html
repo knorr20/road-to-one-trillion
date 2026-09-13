@@ -305,7 +305,7 @@
     </div>
   </section>
 
-  <section data-ch3="" data-ground="bone" style="position: relative; min-height: 100vh; overflow: hidden; background-color: #F4F0E7; color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
+  <section data-ch3="" data-ground="bone" style="position: relative; min-height: 100vh; overflow: visible; background-color: #F4F0E7; color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
     <div data-ch3-track="" style="position: relative; height: 100vh; display: flex; align-items: center; will-change: transform;">
       <svg data-ch3-svg="" viewBox="0 0 4000 400" preserveAspectRatio="none" style="position: absolute; left: 0; top: 58%; width: 400vw; height: 40vh; overflow: visible; pointer-events: none; z-index: 2;">
         <path data-ch3-path="" d="M0,300 C 420,300 560,150 1000,150 C 1420,150 1560,270 2000,250 C 2440,230 2560,110 3000,120 C 3420,130 3620,210 4000,190" fill="none" stroke="#0A1526" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
@@ -1108,29 +1108,54 @@ class Component extends DCLogic {
     this.keep(tl);
   }
 
-  // iPhone/iPad: sticky track + tall section — no GSAP pin, so it won't
-  // auto-dock onto the screen while the user is still on slide 2.
+  // iPhone/iPad: sticky SHELL + translating track.
+  // Never put transform on the sticky node — that kills sticky and the road
+  // scrolls away with the text mid-chapter.
   chapter3Touch(g, sec, track, path, cards, dots) {
     const shellH = window.innerHeight;
     const travel = () => Math.max(window.innerWidth * 2.5, track.scrollWidth - window.innerWidth);
     const settle = () => Math.round(shellH * 0.55);
 
+    let shell = sec.querySelector(':scope > [data-ch3-sticky]');
+    if (!shell) {
+      shell = document.createElement('div');
+      shell.setAttribute('data-ch3-sticky', '');
+      sec.insertBefore(shell, track);
+      shell.appendChild(track);
+    }
+
     sec.style.touchAction = 'pan-y';
     sec.style.overflow = 'visible';
-    sec.style.height = (shellH + travel() + settle()) + 'px';
     sec.style.minHeight = '0';
     sec.style.backgroundColor = '#F4F0E7';
+    const applyHeight = () => {
+      sec.style.height = (shellH + travel() + settle()) + 'px';
+    };
+    applyHeight();
 
-    track.style.position = 'sticky';
-    track.style.top = '0';
-    track.style.left = '0';
-    track.style.width = '100%';
-    track.style.height = shellH + 'px';
-    track.style.minHeight = shellH + 'px';
-    track.style.overflow = 'hidden';
-    track.style.boxSizing = 'border-box';
-    track.style.backgroundColor = '#F4F0E7';
+    // Sticky viewport — no transforms on this element.
+    shell.style.position = 'sticky';
+    shell.style.top = '0';
+    shell.style.left = '0';
+    shell.style.width = '100%';
+    shell.style.height = shellH + 'px';
+    shell.style.minHeight = shellH + 'px';
+    shell.style.overflow = 'hidden';
+    shell.style.boxSizing = 'border-box';
+    shell.style.backgroundColor = '#F4F0E7';
+    g.set(shell, { clearProps: 'transform,x,y' });
+
+    // Horizontal mover lives inside the sticky shell.
+    track.style.position = 'relative';
+    track.style.top = 'auto';
+    track.style.height = '100%';
+    track.style.minHeight = '0';
+    track.style.width = 'max-content';
+    track.style.display = 'flex';
+    track.style.alignItems = 'center';
+    track.style.overflow = 'visible';
     track.style.willChange = 'transform';
+    track.style.backgroundColor = 'transparent';
 
     g.set(cards, { opacity: 0, y: 24 });
     g.set(dots, { scale: 0 });
@@ -1154,10 +1179,10 @@ class Component extends DCLogic {
         end: 'bottom bottom',
         scrub: this.scrubValue(),
         invalidateOnRefresh: true,
-        pin: false
+        pin: false,
+        onRefreshInit: applyHeight
       }
     });
-    // Finish the road before the sticky releases; last stretch is a soft hold.
     tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 0.7 }, 0.05);
     if (path && usePlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.68 }, 0.06);
     else if (path && pathLen) tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 0.68 }, 0.06);
