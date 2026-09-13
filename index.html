@@ -305,10 +305,10 @@
     </div>
   </section>
 
-  <section data-ch3="" data-ground="bone" style="position: relative; min-height: 100vh; overflow-x: auto; background-color: #F4F0E7; color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
+  <section data-ch3="" data-ground="bone" style="position: relative; min-height: 100vh; overflow: hidden; background-color: #F4F0E7; color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
     <div data-ch3-track="" style="position: relative; height: 100vh; display: flex; align-items: center; will-change: transform;">
-      <svg data-ch3-svg="" viewBox="0 0 4000 400" preserveAspectRatio="none" style="position: absolute; left: 0; top: 52%; width: 400vw; height: 34vh; overflow: visible; pointer-events: none;">
-        <path data-ch3-path="" d="M0,300 C 420,300 560,150 1000,150 C 1420,150 1560,270 2000,250 C 2440,230 2560,110 3000,120 C 3420,130 3620,210 4000,190" fill="none" stroke="#0A1526" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+      <svg data-ch3-svg="" viewBox="0 0 4000 400" preserveAspectRatio="none" style="position: absolute; left: 0; top: 58%; width: 400vw; height: 40vh; overflow: visible; pointer-events: none; z-index: 2;">
+        <path data-ch3-path="" d="M0,300 C 420,300 560,150 1000,150 C 1420,150 1560,270 2000,250 C 2440,230 2560,110 3000,120 C 3420,130 3620,210 4000,190" fill="none" stroke="#0A1526" stroke-width="3.5" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
       </svg>
       <div style="flex: 0 0 100vw; height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 28px; padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box; position: relative;">
         <div style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(38px, 6vw, 108px); line-height: 0.98; letter-spacing: -0.028em; max-width: 13ch;" data-bodoni="section">The first film is only the beginning.</div>
@@ -510,13 +510,13 @@ class Component extends DCLogic {
     // iOS URL bar resize + pin refresh causes scroll jumps; ignore those resizes.
     window.ScrollTrigger.config({ ignoreMobileResize: true, autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load' });
 
-    // Touch: no Lenis. Also skip normalizeScroll — it was still producing
-    // hard cuts at pin boundaries; we use sticky stages instead (see lockScenes).
+    // Touch: no Lenis. normalizeScroll keeps iOS pins from sliding away
+    // (critical for the horizontal campaign chapter).
     if (this.isTouch && !this.reduced) {
       if (window.__lenis) { try { window.__lenis.destroy(); } catch (e) {} window.__lenis = null; }
       if (window.__lenisRaf) { try { g.ticker.remove(window.__lenisRaf); } catch (e) {} window.__lenisRaf = null; }
       this.lenis = null;
-      try { window.ScrollTrigger.normalizeScroll(false); } catch (e) {}
+      try { window.ScrollTrigger.normalizeScroll(true); } catch (e) {}
     } else if (!this.reduced && !this.lenis) {
       if (window.__lenis) { try { window.__lenis.destroy(); } catch (e) {} }
       if (window.__lenisRaf) g.ticker.remove(window.__lenisRaf);
@@ -790,14 +790,30 @@ class Component extends DCLogic {
     });
 
     const ch3 = this.q('[data-ch3]');
-    if (ch3 && !this.isTouch) ch3.style.overflowX = 'hidden';
-    if (ch3 && this.isTouch) {
+    if (ch3) {
+      // overflow-x:auto breaks position:fixed pins on iOS — force clip.
+      ch3.style.overflow = 'hidden';
       ch3.style.overflowX = 'hidden';
+      ch3.style.overflowY = 'hidden';
+    }
+    if (ch3 && this.isTouch) {
       const track = this.q('[data-ch3-track]');
       if (track) {
-        track.style.height = '100%';
-        track.style.minHeight = '0';
+        track.style.height = shellH + 'px';
+        track.style.minHeight = shellH + 'px';
       }
+      const svg = this.q('[data-ch3-svg]');
+      if (svg) {
+        svg.style.top = '55%';
+        svg.style.height = '36vh';
+      }
+      const path = this.q('[data-ch3-path]');
+      if (path) path.setAttribute('stroke-width', '4.5');
+      this.qa('[data-ch3-dot]').forEach((d) => {
+        d.style.width = '14px';
+        d.style.height = '14px';
+        d.style.boxShadow = '0 0 0 4px rgba(217,164,65,0.22)';
+      });
     }
 
     const col = this.q('[data-ch4-col]');
@@ -993,6 +1009,7 @@ class Component extends DCLogic {
     const g = window.gsap;
     const sec = this.q('[data-ch3]'), track = this.q('[data-ch3-track]');
     const path = this.q('[data-ch3-path]');
+    const svg = this.q('[data-ch3-svg]');
     const cards = this.qa('[data-ch3-card]'), dots = this.qa('[data-ch3-dot]');
 
     if (this.reduced) {
@@ -1003,28 +1020,56 @@ class Component extends DCLogic {
       sec.style.overflow = 'visible';
       this.qa('[data-ch3-stop]').forEach(s => { s.style.flex = '0 0 auto'; s.style.height = 'auto'; s.style.padding = '60px clamp(20px, 3.4vw, 52px)'; });
       this.qa('[data-ch3-card]').forEach(c => { c.style.position = 'relative'; c.style.left = 'auto'; c.style.top = 'auto'; });
-      this.q('[data-ch3-svg]').style.display = 'none';
+      if (svg) svg.style.display = 'none';
       g.set(dots, { scale: 0 });
       return;
     }
 
-    const travel = () => Math.max(0, track.scrollWidth - window.innerWidth);
+    // iOS: overflow / native sideways scroll must not steal the pin.
+    sec.style.overflow = 'hidden';
+    sec.style.touchAction = 'pan-y';
+    if (this.isTouch) {
+      const h = window.innerHeight;
+      sec.style.height = h + 'px';
+      track.style.height = h + 'px';
+    }
+
+    const travel = () => Math.max(window.innerWidth * 2.5, track.scrollWidth - window.innerWidth);
     g.set(cards, { opacity: 0, y: 30 });
     g.set(dots, { scale: 0 });
-    if (window.DrawSVGPlugin) g.set(path, { drawSVG: '0%' });
+
+    // Draw the road line even if DrawSVGPlugin is missing.
+    let usePlugin = !!(window.DrawSVGPlugin && path);
+    let pathLen = 0;
+    if (path) {
+      try { pathLen = path.getTotalLength(); } catch (e) { pathLen = 0; }
+      if (usePlugin) {
+        g.set(path, { drawSVG: '0%' });
+      } else if (pathLen) {
+        path.style.strokeDasharray = String(pathLen);
+        path.style.strokeDashoffset = String(pathLen);
+      }
+    }
 
     const tl = g.timeline({
       scrollTrigger: this.pinScroll({
         trigger: sec,
         start: 'top top',
-        end: () => '+=' + travel(),
+        end: () => '+=' + Math.max(travel(), window.innerHeight * 2.2),
         invalidateOnRefresh: true,
-        forcePin: true
+        forcePin: true,
+        pinReparent: this.isTouch,
+        pinType: 'fixed',
+        anticipatePin: 0
       })
     });
     // Hold the opener briefly, then travel — avoids a clipped first frame.
     tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: 0.9 }, 0.06);
-    if (window.DrawSVGPlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.86 }, 0.08);
+    if (path && usePlugin) {
+      tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: 0.86 }, 0.08);
+    } else if (path && pathLen) {
+      tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: 0.86 }, 0.08);
+    }
     [0.22, 0.46, 0.68].forEach((at, i) => {
       tl.to(cards[i], { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, at)
         .to(dots[i], { scale: 1, duration: 0.08, ease: 'back.out(2)' }, at + 0.02);
