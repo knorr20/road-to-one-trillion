@@ -592,8 +592,9 @@ class Component extends DCLogic {
   }
 
   scrubValue() {
-    if (this.isTouch) return Math.max(0.85, (this.cfg && this.cfg.scrub) || 0.35);
-    return (this.cfg && this.cfg.scrub) || 0.35;
+    // Longer lag = softer catch-up through slide boundaries and still dissolves.
+    if (this.isTouch) return 1.15;
+    return Math.max(0.55, (this.cfg && this.cfg.scrub) || 0.35);
   }
 
   // Desktop: GSAP pin. Touch: no pin — sticky inners + tall sections (lockScenes)
@@ -643,6 +644,44 @@ class Component extends DCLogic {
     return stage;
   }
 
+  // Soft dissolve between major slides (navy veil peaks at the handoff).
+  easeSlideHandoffs() {
+    if (this.reduced) return;
+    const g = window.gsap;
+    const root = this.rootRef && this.rootRef.current;
+    if (!root) return;
+    let veil = root.querySelector('[data-slide-veil]');
+    if (!veil) {
+      veil = document.createElement('div');
+      veil.setAttribute('data-slide-veil', '');
+      veil.style.cssText = 'position:fixed;inset:0;z-index:42;pointer-events:none;background:#0A1526;opacity:0;';
+      root.appendChild(veil);
+    }
+    const secs = [
+      this.q('[data-scene]'),
+      this.q('[data-close]'),
+      this.q('[data-ch2]'),
+      this.q('[data-ch3]'),
+      this.q('[data-ch4]'),
+      this.q('[data-finale]')
+    ].filter(Boolean);
+    const scrub = this.isTouch ? 1.25 : 0.7;
+    for (let i = 0; i < secs.length - 1; i++) {
+      const next = secs[i + 1];
+      const tl = g.timeline({
+        scrollTrigger: {
+          trigger: next,
+          start: 'top 92%',
+          end: 'top 8%',
+          scrub
+        }
+      });
+      tl.fromTo(veil, { opacity: 0 }, { opacity: this.isTouch ? 0.72 : 0.48, ease: 'none', duration: 0.42 }, 0)
+        .to(veil, { opacity: 0, ease: 'none', duration: 0.58 }, 0.42);
+      this.keep(tl);
+    }
+  }
+
   build() {
     this.teardown();
     const p = this.props;
@@ -662,6 +701,7 @@ class Component extends DCLogic {
     this.chapter3();
     this.chapter4();
     this.grounds();
+    this.easeSlideHandoffs();
     window.ScrollTrigger.refresh();
   }
 
@@ -872,10 +912,10 @@ class Component extends DCLogic {
     });
     // Sequential beats: people+number hold, then hand off to the question
     // without a blank frame or readable triple-overlap.
-    tl.to(people, { opacity: 1, y: 0, duration: 0.14, ease: 'power2.out' }, 0.04)
-      .to(number, { opacity: 1, y: 0, duration: 0.14, ease: 'power2.out' }, 0.32)
-      .to([people, number], { opacity: 0, y: -18, duration: 0.08, ease: 'power2.in' }, 0.6)
-      .to(question, { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, 0.64);
+    tl.to(people, { opacity: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.04)
+      .to(number, { opacity: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.30)
+      .to([people, number], { opacity: 0, y: -14, duration: 0.12, ease: 'power2.inOut' }, 0.58)
+      .to(question, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, 0.62);
     const numberField = this.q('[data-dotfield="number"]');
     if (numberField) {
       g.set(numberField, { opacity: 0 });
@@ -885,7 +925,7 @@ class Component extends DCLogic {
     this.keep(tl);
   }
 
-  // 2 — three title cards, cut
+  // 2 — three stills with soft crossfades (stable ink ground, no strobe)
   chapter2() {
     const g = window.gsap;
     const sec = this.q('[data-ch2]'), ground = this.q('[data-ch2-ground]'), pad = this.q('[data-ch2-pad]');
@@ -893,8 +933,7 @@ class Component extends DCLogic {
     const title = cap('title'), c0 = cap('0'), c1 = cap('1'), c2 = cap('2'), made = cap('made'), close = cap('close');
     const track = this.q('[data-measure-track]'), meta = this.q('[data-measure-meta]'), amount = this.q('[data-measure-amount]');
 
-    const INK = '#0A1526', BONE = '#F4F0E7', DEEP = '#060D18', SLATE = '#1C2C45';
-    const onBone = { track: '#DCD5C5', meta: '#5A6675', amount: '#8A6410' };
+    const INK = '#0A1526', BONE = '#F4F0E7';
     const onInk = { track: '#253349', meta: '#8E9AAB', amount: '#D9A441' };
 
     const still0 = c0 && c0.querySelector('[data-still-img]');
@@ -908,18 +947,13 @@ class Component extends DCLogic {
     }
 
     g.set([c0, c1, c2, made, close], { opacity: 0 });
+    // One stable ink ground for the whole chapter — no bone/deep/slate flashes.
     g.set(ground, { backgroundColor: INK });
     g.set(pad, { color: BONE });
-    // Same start pose for every still so hard-cuts don't jump.
+    g.set(track, { backgroundColor: onInk.track });
+    g.set(meta, { color: onInk.meta });
+    if (amount) g.set(amount, { color: onInk.amount });
     [still0, still1, still2].filter(Boolean).forEach((img) => g.set(img, { scale: 1.04, x: 0, y: 0 }));
-
-    const cut = (tl, at, bg, ink, m) => {
-      tl.set(ground, { backgroundColor: bg }, at)
-        .set(pad, { color: ink }, at)
-        .set(track, { backgroundColor: m.track }, at)
-        .set(meta, { color: m.meta }, at)
-        .set(amount, { color: m.amount }, at);
-    };
 
     const tl = g.timeline({
       scrollTrigger: this.pinScroll(Object.assign(
@@ -928,24 +962,23 @@ class Component extends DCLogic {
       ))
     });
 
-    tl.to(title, { opacity: 0, duration: 0.05, ease: 'none' }, 0.14);
-    cut(tl, 0.16, BONE, INK, onBone);
-    tl.to(c0, { opacity: 1, duration: 0.02, ease: 'none' }, 0.16)
-      .to(c0, { opacity: 0, duration: 0.02, ease: 'none' }, 0.34);
-    // Identical start pose on every cut; only the end drift differs slightly.
-    if (still0) tl.fromTo(still0, { scale: 1.04, x: 0, y: 0 }, { scale: 1.10, x: 0, y: -6, ease: 'none', duration: 0.18 }, 0.16);
-    cut(tl, 0.34, DEEP, BONE, onInk);
-    tl.to(c1, { opacity: 1, duration: 0.02, ease: 'none' }, 0.34)
-      .to(c1, { opacity: 0, duration: 0.02, ease: 'none' }, 0.52);
-    if (still1) tl.fromTo(still1, { scale: 1.04, x: 0, y: 0 }, { scale: 1.10, x: 0, y: -6, ease: 'none', duration: 0.18 }, 0.34);
-    cut(tl, 0.52, SLATE, BONE, onInk);
-    tl.to(c2, { opacity: 1, duration: 0.02, ease: 'none' }, 0.52)
-      .to(c2, { opacity: 0, duration: 0.02, ease: 'none' }, 0.7);
-    if (still2) tl.fromTo(still2, { scale: 1.04, x: 0, y: 0 }, { scale: 1.10, x: 0, y: -6, ease: 'none', duration: 0.18 }, 0.52);
-    cut(tl, 0.7, INK, BONE, onInk);
-    tl.fromTo(made, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.72)
-      .to(made, { opacity: 0, y: -18, duration: 0.05, ease: 'power2.in' }, 0.84)
-      .fromTo(close, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.07, ease: 'power2.out' }, 0.9);
+    tl.to(title, { opacity: 0, duration: 0.1, ease: 'power1.inOut' }, 0.1);
+
+    tl.to(c0, { opacity: 1, duration: 0.12, ease: 'power1.out' }, 0.14)
+      .to(c0, { opacity: 0, duration: 0.12, ease: 'power1.inOut' }, 0.30);
+    if (still0) tl.fromTo(still0, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.28 }, 0.14);
+
+    tl.to(c1, { opacity: 1, duration: 0.12, ease: 'power1.out' }, 0.28)
+      .to(c1, { opacity: 0, duration: 0.12, ease: 'power1.inOut' }, 0.46);
+    if (still1) tl.fromTo(still1, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.28 }, 0.28);
+
+    tl.to(c2, { opacity: 1, duration: 0.12, ease: 'power1.out' }, 0.44)
+      .to(c2, { opacity: 0, duration: 0.12, ease: 'power1.inOut' }, 0.64);
+    if (still2) tl.fromTo(still2, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.28 }, 0.44);
+
+    tl.fromTo(made, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.1, ease: 'power2.out' }, 0.68)
+      .to(made, { opacity: 0, y: -12, duration: 0.08, ease: 'power2.in' }, 0.82)
+      .fromTo(close, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, 0.88);
     this.keep(tl);
   }
 
@@ -1202,9 +1235,10 @@ class Component extends DCLogic {
         trigger: sec, start: 'top 70%', end: 'bottom 30%',
         onToggle: (self) => {
           const on = self.isActive;
-          track.style.background = on ? '#DCD5C5' : '#253349';
-          meta.style.color = on ? '#5A6675' : '#8E9AAB';
-          if (amount) amount.style.color = on ? '#8A6410' : '#D9A441';
+          // Tween — hard style flips strobed against navy/bone section changes.
+          g.to(track, { backgroundColor: on ? '#DCD5C5' : '#253349', duration: 0.55, overwrite: 'auto', ease: 'power1.inOut' });
+          g.to(meta, { color: on ? '#5A6675' : '#8E9AAB', duration: 0.55, overwrite: 'auto', ease: 'power1.inOut' });
+          if (amount) g.to(amount, { color: on ? '#8A6410' : '#D9A441', duration: 0.55, overwrite: 'auto', ease: 'power1.inOut' });
         }
       }));
     });
