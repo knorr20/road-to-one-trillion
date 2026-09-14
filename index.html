@@ -287,8 +287,8 @@
 
   <section data-scene="" data-ground="navy" style="position: relative; height: 100vh; overflow: hidden; background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px);">
     <div data-dotfield="scene" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
-    <div style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 50%; transform: translateY(-50%); z-index: 1;">
-      <div data-word="" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: 300px; line-height: 0.78; letter-spacing: -0.038em; white-space: nowrap; transform-origin: 0% 50%;" data-bodoni="mega">TRILLION</div>
+    <div data-word-slot="" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1;">
+      <div data-word="" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: 300px; line-height: 0.78; letter-spacing: -0.038em; white-space: nowrap; transform-origin: 50% 50%;" data-bodoni="mega">TRILLION</div>
     </div>
   </section>
 
@@ -942,13 +942,21 @@ class Component extends DCLogic {
     ST.addEventListener('refreshInit', this.fitHandler);
 
     const s0 = this.cfg.openSpan / NORM, s1 = this.cfg.landed / NORM;
-    if (this.reduced) {
+    // Slot is viewport-centered; still measure final x so scale/pin/subpixels
+    // don't leave TRILLION a few px off true center when landed.
+    const landedX = () => {
       g.set(word, { scale: s1, x: 0 });
+      const r = word.getBoundingClientRect();
+      return (window.innerWidth / 2) - ((r.left + r.right) / 2);
+    };
+    const enterX = () => landedX() - 0.12 * window.innerWidth;
+    if (this.reduced) {
+      g.set(word, { scale: s1, x: landedX() });
       g.set(fill, { scaleX: 0.415 });
       g.set(meta, { opacity: 1 });
       return;
     }
-    g.set(word, { scale: s0, x: 0.1 * window.innerWidth });
+    g.set(word, { scale: s0, x: enterX() });
     g.set(fill, { scaleX: 0 });
     g.set(meta, { opacity: 0 });
 
@@ -958,7 +966,7 @@ class Component extends DCLogic {
         { invalidateOnRefresh: true, snap: this.magneticSnap([0, 0.72, 1], 0.1) }
       ))
     });
-    tl.fromTo(word, { scale: s0, x: () => 0.1 * window.innerWidth }, { scale: s1, x: 0, ease: 'power2.out', duration: 0.72 }, 0)
+    tl.fromTo(word, { scale: s0, x: enterX }, { scale: s1, x: landedX, ease: 'power2.out', duration: 0.72 }, 0)
       .fromTo(fill, { scaleX: 0 }, { scaleX: 0.415, ease: 'none', duration: 0.26 }, 0.54)
       .fromTo(meta, { opacity: 0 }, { opacity: 1, duration: 0.18 }, 0.76);
     const sceneField = this.q('[data-dotfield="scene"]');
