@@ -201,6 +201,12 @@
     height: 100%;
     overflow: hidden;
   }
+  /* Scene mega-TRILLION: allow glyph tops to paint past the shell; still clip sides. */
+  [data-touch-clip][data-y-bleed] {
+    overflow: visible;
+    clip-path: inset(-48vh 0 -48vh 0);
+    -webkit-clip-path: inset(-48vh 0 -48vh 0);
+  }
 
   /* Bodoni optical-size tiers: lower opsz = thicker hairlines */
   /* Bodoni tiers — mid balance: readable hairlines, not over-bold */
@@ -519,8 +525,9 @@ class Component extends DCLogic {
     el.style.overflow = 'visible';
   }
 
-  ensureTouchClip(stage) {
+  ensureTouchClip(stage, opts) {
     if (!stage) return null;
+    const allowYBleed = !!(opts && opts.allowYBleed);
     let clip = stage.querySelector(':scope > [data-touch-clip]');
     if (!clip) {
       clip = document.createElement('div');
@@ -531,8 +538,18 @@ class Component extends DCLogic {
     clip.style.position = 'relative';
     clip.style.width = '100%';
     clip.style.height = '100%';
-    clip.style.overflow = 'hidden';
     clip.style.boxSizing = 'border-box';
+    if (allowYBleed) {
+      clip.setAttribute('data-y-bleed', '');
+      clip.style.overflow = 'visible';
+      clip.style.clipPath = 'inset(-48vh 0 -48vh 0)';
+      clip.style.webkitClipPath = 'inset(-48vh 0 -48vh 0)';
+    } else {
+      clip.removeAttribute('data-y-bleed');
+      clip.style.overflow = 'hidden';
+      clip.style.clipPath = '';
+      clip.style.webkitClipPath = '';
+    }
     return clip;
   }
 
@@ -773,7 +790,8 @@ class Component extends DCLogic {
 
   // Wrap section children in a sticky viewport shell; section itself becomes tall.
   // Extra settle keeps the last frame on screen before the sticky releases.
-  touchStickyStage(sec, scrollVh) {
+  // opts.allowYBleed: scene mega-type — don't slice glyph tops (TRILLION).
+  touchStickyStage(sec, scrollVh, opts) {
     if (!sec || !this.isTouch) return;
     const shellH = this.viewportShellH();
     const settle = 0.45;
@@ -793,7 +811,7 @@ class Component extends DCLogic {
     stage.style.minHeight = shellH + 'px';
     stage.style.boxSizing = 'border-box';
     this.paintStickyHalo(stage, getComputedStyle(sec).backgroundColor || '#0A1526');
-    this.ensureTouchClip(stage);
+    this.ensureTouchClip(stage, opts);
     // Never transform the sticky node itself.
     if (window.gsap) window.gsap.set(stage, { clearProps: 'transform,x,y' });
     sec.style.height = ((scrollVh + settle) * shellH) + 'px';
@@ -895,7 +913,7 @@ class Component extends DCLogic {
 
     // Touch: sticky for all story chapters including network (no GSAP pin yanks).
     if (this.isTouch) {
-      this.touchStickyStage(this.q('[data-scene]'), 1 + (this.cfg.lengthVh || 1.5));
+      this.touchStickyStage(this.q('[data-scene]'), 1 + (this.cfg.lengthVh || 1.5), { allowYBleed: true });
       this.touchStickyStage(this.q('[data-close]'), 5.0);
       this.touchStickyStage(this.q('[data-ch2]'), 4.4);
       // ch3 height/overflow owned by chapter3Touch()
@@ -1067,8 +1085,19 @@ class Component extends DCLogic {
   scene1() {
     const g = window.gsap, ST = window.ScrollTrigger;
     const word = this.q('[data-word]'), scene = this.q('[data-scene]');
+    const slot = this.q('[data-word-slot]');
     const fill = this.q('[data-measure-fill]'), meta = this.q('[data-measure-meta]');
     const NORM = 2.2;
+    // iPad: keep glyph tops (T crossbar) in frame — tight line-box + mega scale
+    // was getting sliced by the sticky clip before scroll shrink.
+    if (this.isTouch && word) {
+      word.style.lineHeight = '0.92';
+      word.style.overflow = 'visible';
+    }
+    if (this.isTouch && slot) {
+      // Bias the crop slightly downward so open-scale tops aren't flush-cut.
+      slot.style.top = '56%';
+    }
     const fit = () => {
       g.set(word, { scale: 1, x: 0 });
       const w = word.offsetWidth;
