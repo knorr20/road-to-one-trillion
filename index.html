@@ -288,7 +288,7 @@
   <section data-scene="" data-ground="navy" style="position: relative; height: 100vh; overflow: hidden; background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px);">
     <div data-dotfield="scene" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
     <div data-word-slot="" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1;">
-      <div data-word="" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: 300px; line-height: 0.78; letter-spacing: -0.038em; white-space: nowrap; transform-origin: 50% 50%;" data-bodoni="mega">TRILLION</div>
+      <div data-word="" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: 300px; line-height: 0.78; letter-spacing: -0.038em; white-space: nowrap; transform-origin: 0% 50%;" data-bodoni="mega">TRILLION</div>
     </div>
   </section>
 
@@ -942,14 +942,21 @@ class Component extends DCLogic {
     ST.addEventListener('refreshInit', this.fitHandler);
 
     const s0 = this.cfg.openSpan / NORM, s1 = this.cfg.landed / NORM;
-    // Slot is viewport-centered; still measure final x so scale/pin/subpixels
-    // don't leave TRILLION a few px off true center when landed.
+    // Origin stays at the LEFT of the glyph (start of TRILLION). Final x is
+    // measured so the landed word is still viewport-centered — the two goals
+    // don't fight if enter/land x are solved separately.
     const landedX = () => {
       g.set(word, { scale: s1, x: 0 });
       const r = word.getBoundingClientRect();
       return (window.innerWidth / 2) - ((r.left + r.right) / 2);
     };
-    const enterX = () => landedX() - 0.12 * window.innerWidth;
+    const enterX = () => {
+      g.set(word, { scale: s0, x: 0 });
+      const r = word.getBoundingClientRect();
+      // Frame the start of the word near the left side, like the original beat.
+      const targetLeft = 0.06 * window.innerWidth;
+      return targetLeft - r.left;
+    };
     if (this.reduced) {
       g.set(word, { scale: s1, x: landedX() });
       g.set(fill, { scaleX: 0.415 });
