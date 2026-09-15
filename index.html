@@ -331,6 +331,105 @@
     line-height: 1.55;
     margin: 0;
   }
+  .series-title-lift {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(22px, 2.6vw, 40px);
+    line-height: 1.1;
+    letter-spacing: -0.022em;
+    color: #F4F0E7;
+    margin: 0;
+  }
+  .t-pilot {
+    position: relative;
+    display: inline-block;
+    color: #D9A441;
+  }
+  .pilot-underline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.06em;
+    height: 1.5px;
+    background: #D9A441;
+    transform: scaleX(0);
+    transform-origin: 0% 50%;
+    pointer-events: none;
+  }
+  .ask-commit {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #D9A441;
+    border-radius: 0;
+    padding: 10px 0 8px;
+    margin: calc(var(--gap-stack) + 8px) 0 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #0A1526;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .ask-commit:hover,
+  .ask-commit:focus-visible {
+    color: #8A6410;
+    outline: none;
+  }
+  .ask-commit.is-committed {
+    color: #8A6410;
+    border-bottom-color: #8A6410;
+  }
+  .motif-hairline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #D9A441;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 58;
+  }
+  /* iPad / narrow: stack ch4 so network + benefits don't collide */
+  @media (max-width: 980px), (pointer: coarse) and (max-height: 860px) {
+    [data-ch4] {
+      display: flex;
+      flex-direction: column;
+    }
+    [data-ch4-stage] {
+      position: relative !important;
+      width: 100% !important;
+      height: min(36vh, 260px) !important;
+      flex: 0 0 auto;
+    }
+    [data-ch4-col] {
+      position: relative;
+      width: 100% !important;
+      min-width: 0 !important;
+      min-height: 0 !important;
+      flex: 1 1 auto;
+    }
+    [data-ch4-head] {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      top: auto !important;
+      padding: clamp(28px, 6vh, 72px) var(--pad-x) 0;
+      max-width: none;
+    }
+    [data-ch4-benefits] {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      top: auto !important;
+      padding: var(--gap-stack) var(--pad-x) var(--pad-bottom);
+      min-height: 180px;
+      max-width: none;
+    }
+  }
 
   /* Poster: title/media/caption on fixed rails (opacity stays on beat wrapper) */
   .layout-poster {
@@ -439,6 +538,10 @@
     gap: 14px;
     box-sizing: border-box;
   }
+  /* Ch3 stops: same eye rail as centered intro/close titles */
+  [data-ch3-stop] .layout-evidence {
+    top: var(--rail-title);
+  }
   .layout-evidence .evidence-kicker {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
@@ -467,6 +570,7 @@
 </helmet>
 <div ref="{{ rootRef }}" class="deck" style="background: #0A1526; color: #F4F0E7; font-family: 'Archivo', system-ui, sans-serif;">
 
+  <div data-motif-line="" class="motif-hairline" aria-hidden="true"></div>
   <div style="position: fixed; top: 26px; left: var(--pad-x); z-index: 60; display: flex; gap: 12px; align-items: baseline; font-size: 12px; letter-spacing: 0.06em; mix-blend-mode: difference; color: #8E9AAB;">
     <span data-chapter-num="" style="color: #D9A441;">01</span>
     <span data-chapter-name="">The scale problem</span>
@@ -533,7 +637,8 @@
         <div data-ch2-cap="title" class="layout-lede-stack">
           <div class="lede-stack-inner" style="max-width: min(92vw, 1100px);">
             <div class="t-box t-justify t-display type-display" style="--t-display: var(--measure-display);" data-bodoni="section">Turn the number<br>into a story</div>
-            <div class="t-box t-justify t-lede" style="color: #E6E2D8; margin: 0;"><span class="t-em-italic">The Road to One Trillion</span> takes a once-in-a-generation pursuit and translates it into a documentary series that carries Core's message through the people, companies and ideas driving it forward.</div>
+            <div class="t-box t-justify series-title-lift" data-bodoni="card">The Road to One Trillion</div>
+            <div class="t-box t-justify t-lede" style="color: #E6E2D8; margin: 0;">takes a once-in-a-generation pursuit and translates it into a documentary series that carries Core's message through the people, companies and ideas driving it forward.</div>
           </div>
         </div>
         <div data-ch2-cap="0" style="position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
@@ -565,8 +670,9 @@
 
   <section data-ch3="" data-ground="bone" style="position: relative; min-height: 100vh; overflow: visible; background-color: #F4F0E7; color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
     <div data-ch3-track="" style="position: relative; height: 100vh; display: flex; align-items: center; will-change: transform;">
-      <svg data-ch3-svg="" viewBox="0 0 4000 400" preserveAspectRatio="none" style="position: absolute; left: 0; top: 58%; width: 400vw; height: 40vh; overflow: visible; pointer-events: none; z-index: 2;">
+      <svg data-ch3-svg="" viewBox="0 0 4000 400" preserveAspectRatio="none" style="position: absolute; left: 0; top: 58%; width: 500vw; height: 40vh; overflow: visible; pointer-events: none; z-index: 2;">
         <path data-ch3-path="" d="M0,300 C 420,300 560,150 1000,150 C 1420,150 1560,270 2000,250 C 2440,230 2560,110 3000,120 C 3420,130 3620,210 4000,190" fill="none" stroke="#0A1526" stroke-width="3.5" stroke-linecap="round"></path>
+        <circle data-ch3-terminus="" cx="4000" cy="190" r="16" fill="none" stroke="#D9A441" stroke-width="3.2" opacity="0"></circle>
       </svg>
       <div style="flex: 0 0 100vw; height: 100%; position: relative; box-sizing: border-box;">
         <div class="layout-lede-stack">
@@ -576,7 +682,7 @@
           </div>
         </div>
       </div>
-      <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0; box-sizing: border-box;">
+      <div data-ch3-stop="" style="flex: 0 0 100vw; height: 100%; position: relative; padding: 0; box-sizing: border-box;">
         <div data-ch3-card="" class="layout-evidence t-card-gap">
           <div class="evidence-kicker" style="color: #8A6410;">01</div>
           <div class="t-balance type-card" data-bodoni="card">The <span class="t-em">flagship</span></div>
@@ -584,7 +690,7 @@
         </div>
         <div data-ch3-dot="" style="position: absolute; left: 22%; top: 52%; width: 11px; height: 11px; border-radius: 50%; background: #D9A441;"></div>
       </div>
-      <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0; box-sizing: border-box;">
+      <div data-ch3-stop="" style="flex: 0 0 100vw; height: 100%; position: relative; padding: 0; box-sizing: border-box;">
         <div data-ch3-card="" class="layout-evidence t-card-gap">
           <div class="evidence-kicker" style="color: #8A6410;">02</div>
           <div class="t-balance type-card" data-bodoni="card">The chapters</div>
@@ -592,7 +698,7 @@
         </div>
         <div data-ch3-dot="" style="position: absolute; left: 22%; top: 52%; width: 11px; height: 11px; border-radius: 50%; background: #D9A441;"></div>
       </div>
-      <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0; box-sizing: border-box;">
+      <div data-ch3-stop="" style="flex: 0 0 100vw; height: 100%; position: relative; padding: 0; box-sizing: border-box;">
         <div data-ch3-card="" class="layout-evidence t-card-gap">
           <div class="evidence-kicker" style="color: #8A6410;">03</div>
           <div class="t-balance type-card" data-bodoni="card">The journey</div>
@@ -600,10 +706,13 @@
         </div>
         <div data-ch3-dot="" style="position: absolute; left: 22%; top: 52%; width: 11px; height: 11px; border-radius: 50%; background: #D9A441;"></div>
       </div>
-      <div style="flex: 0 0 66vw; height: 100%; position: relative; box-sizing: border-box;">
+      <div data-ch3-close-panel="" style="flex: 0 0 100vw; height: 100%; position: relative; box-sizing: border-box;">
         <div class="layout-lede-stack">
-          <div class="lede-stack-inner">
-            <div class="t-box t-justify t-display type-display type-display-sm" style="--t-display: 28ch;" data-bodoni="section">Real people, real stakes, and a real outcome<br>that hasn't been decided yet</div>
+          <div class="lede-stack-inner" style="align-items: center; text-align: center;">
+            <div data-ch3-close="" class="t-box t-center t-display type-display type-display-sm" style="--t-display: 28ch; text-align: center;" data-bodoni="section">
+              <span data-ch3-close-main="">Real people, real stakes, and a real outcome</span><br>
+              <span data-ch3-open-end="">that hasn't been decided yet</span>
+            </div>
           </div>
         </div>
       </div>
@@ -648,11 +757,12 @@
   </section>
 
   <section data-finale="" data-ground="bone" style="position: relative; min-height: 100vh; background-color: #F4F0E7; color: #0A1526; box-sizing: border-box; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
-    <div class="layout-lede-stack">
-      <div class="lede-stack-inner" style="width: min(92vw, 28ch);">
-        <div class="t-box t-center t-display type-display" style="--t-display: 100%; width: 100%; max-width: 100%;" data-bodoni="section">Make one trillion<br><span class="t-em">personal</span></div>
-        <div class="t-box t-center type-lede-body" style="width: 100%; max-width: none; color: #2C3949;">Greenlight the <span class="t-em">pilot</span> chapter—and put the road in motion.</div>
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #8A6410; text-align: center;">THE ASK · PILOT CHAPTER</div>
+    <div data-finale-pad="" class="layout-lede-stack">
+      <div class="lede-stack-inner" style="width: min(92vw, 22ch); align-items: center; text-align: center;">
+        <div data-finale-title="" class="t-box t-center t-display type-display" style="--t-display: 100%; width: 100%; max-width: 100%; font-size: clamp(42px, 6.4vw, 108px); line-height: 0.98;" data-bodoni="section">Make one trillion<br><span class="t-em">personal</span></div>
+        <div data-finale-lede="" class="t-box t-center type-lede-body" style="width: 100%; max-width: none; color: #2C3949;">Greenlight the <span class="t-pilot">pilot<span data-pilot-line="" class="pilot-underline"></span></span> chapter—and put the road in motion.</div>
+        <div data-finale-kicker="" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #8A6410; text-align: center;">THE ASK · PILOT CHAPTER</div>
+        <button type="button" data-ask-commit="" class="ask-commit">Greenlight the pilot</button>
       </div>
     </div>
   </section>
@@ -679,6 +789,7 @@ class Component extends DCLogic {
   componentWillUnmount() {
     this.teardown();
     this.unbindTouchShellSync();
+    this.unbindPresenterMode();
     if (this.lenis) { this.lenis.destroy(); this.lenis = null; }
   }
 
@@ -1039,10 +1150,13 @@ class Component extends DCLogic {
     this.chapter2();
     this.chapter3();
     this.chapter4();
+    this.finaleAsk();
     this.grounds();
+    this.motifContinuity();
     this.easeSlideHandoffs();
     this.bridgeAllHandoffs();
     if (this.isTouch) this.bindTouchShellSync();
+    this.bindPresenterMode();
     window.ScrollTrigger.refresh();
   }
 
@@ -1109,11 +1223,13 @@ class Component extends DCLogic {
       this.touchStickyStage(this.q('[data-ch2]'), 5.5);
       // ch3 height/overflow owned by chapter3Touch()
       this.touchStickyStage(this.q('[data-ch4]'), 5.0);
+      this.touchStickyStage(this.q('[data-finale]'), 2.0);
     } else {
       viewport(this.q('[data-close]'));
       viewport(this.q('[data-ch2]'));
       viewport(this.q('[data-ch3]'));
       viewport(this.q('[data-ch4]'));
+      viewport(this.q('[data-finale]'));
       const scene = this.q('[data-scene]');
       if (scene) { scene.style.height = '100vh'; scene.style.overflow = 'hidden'; }
     }
@@ -1582,6 +1698,9 @@ class Component extends DCLogic {
     const path = this.q('[data-ch3-path]');
     const svg = this.q('[data-ch3-svg]');
     const cards = this.qa('[data-ch3-card]'), dots = this.qa('[data-ch3-dot]');
+    const terminus = this.q('[data-ch3-terminus]');
+    const close = this.q('[data-ch3-close]');
+    const openEnd = this.q('[data-ch3-open-end]');
 
     if (this.reduced) {
       track.style.position = 'relative';
@@ -1593,11 +1712,13 @@ class Component extends DCLogic {
       this.qa('[data-ch3-card]').forEach(c => { c.style.position = 'relative'; c.style.left = 'auto'; c.style.top = 'auto'; });
       if (svg) svg.style.display = 'none';
       g.set(dots, { scale: 0 });
+      if (close) g.set(close, { autoAlpha: 1, y: 0 });
+      if (openEnd) g.set(openEnd, { color: '#D9A441' });
       return;
     }
 
     if (this.isTouch) {
-      this.chapter3Touch(g, sec, track, path, cards, dots);
+      this.chapter3Touch(g, sec, track, path, cards, dots, terminus, close, openEnd);
       return;
     }
 
@@ -1607,7 +1728,8 @@ class Component extends DCLogic {
 
     const travel = () => Math.max(window.innerWidth * 2.5, track.scrollWidth - window.innerWidth);
     const settle = () => Math.round(window.innerHeight * 0.4);
-    g.set(cards, { opacity: 0, y: 30 });
+    // Visible from the start so stops enter from the right already readable.
+    g.set(cards, { opacity: 1, y: 0 });
     g.set(dots, { scale: 0 });
 
     let usePlugin = !!(window.DrawSVGPlugin && path);
@@ -1621,6 +1743,11 @@ class Component extends DCLogic {
       }
     }
 
+    const INTRO = 0.14;
+    const TRAVEL = 0.72;
+    const OUTRO = 0.14;
+    const tip = this.chapter3TerminusState(g, path, terminus, dots, close, openEnd, INTRO + TRAVEL);
+
     const tl = g.timeline({
       scrollTrigger: this.pinScroll({
         trigger: sec,
@@ -1630,31 +1757,92 @@ class Component extends DCLogic {
         forcePin: true,
         pinType: 'fixed',
         anticipatePin: 0,
-        // Intro/outro dwell + card stops; drawSVG stays 1:1 with travel.
-        snap: this.magneticSnap([0.07, 0.30, 0.46, 0.61, 0.93], 0.08)
+        // Full-frame snaps: intro, three 100vw stops, close after open-clause.
+        snap: this.magneticSnap([0.07, 0.32, 0.50, 0.68, 0.97], 0.08),
+        onUpdate: tip.onUpdate,
+        onRefresh: tip.place
       })
     });
-    const INTRO = 0.14;
-    const TRAVEL = 0.72;
-    const OUTRO = 0.14;
-    // Hold campaign title, then travel+draw together, then hold closing title.
+    // Hold campaign title, then travel+draw together, then arrival without seal.
     tl.to({}, { duration: INTRO }, 0);
     tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: TRAVEL }, INTRO);
     if (path && usePlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: TRAVEL }, INTRO);
     else if (path && pathLen) tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: TRAVEL }, INTRO);
-    [0.22, 0.45, 0.65].forEach((t, i) => {
+    // Dot pop only when each 100vw stop is fully framed (cards already visible).
+    [0.25, 0.50, 0.75].forEach((t, i) => {
       const at = INTRO + t * TRAVEL;
-      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.08, ease: 'power2.out' }, at)
-        .to(dots[i], { scale: 1, duration: 0.07, ease: 'back.out(2)' }, at + 0.02);
+      tl.to(dots[i], { scale: 1, duration: 0.07, ease: 'back.out(2)' }, at);
     });
-    tl.to({}, { duration: OUTRO }, INTRO + TRAVEL);
+    tip.wireOutro(tl, INTRO + TRAVEL, OUTRO);
     this.keep(tl);
+  }
+
+  // Arrival without seal: hollow gold tip (play-once) + close copy in outro.
+  chapter3TerminusState(g, path, terminus, dots, close, openEnd, tipEnter) {
+    const tipExit = Math.max(0, tipEnter - 0.05);
+    const RING_R = 16;
+    const RING_PULSE = 21;
+    let tipPlayed = false;
+    let tipTl = null;
+
+    const place = () => {
+      if (!path || !terminus) return;
+      try {
+        const len = path.getTotalLength();
+        if (!len) return;
+        const pt = path.getPointAtLength(len);
+        terminus.setAttribute('cx', String(pt.x));
+        terminus.setAttribute('cy', String(pt.y));
+      } catch (e) {}
+    };
+
+    place();
+    if (terminus) g.set(terminus, { attr: { r: 0 }, opacity: 0 });
+    if (close) g.set(close, { autoAlpha: 0, y: 18 });
+    if (openEnd) g.set(openEnd, { color: '#0A1526' });
+
+    const resetTip = () => {
+      tipPlayed = false;
+      if (tipTl) { tipTl.kill(); tipTl = null; }
+      if (terminus) g.set(terminus, { attr: { r: 0 }, opacity: 0 });
+    };
+
+    const playTip = () => {
+      if (tipPlayed || !terminus) return;
+      tipPlayed = true;
+      if (tipTl) tipTl.kill();
+      place();
+      tipTl = g.timeline();
+      tipTl.fromTo(terminus, { attr: { r: 0 }, opacity: 0 }, { attr: { r: RING_R }, opacity: 1, duration: 0.38, ease: 'back.out(1.7)' }, 0)
+        .to(terminus, { attr: { r: RING_PULSE }, duration: 0.22, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 0.32);
+      this.keep(tipTl);
+    };
+
+    return {
+      place: place,
+      onUpdate: (self) => {
+        const p = self.progress;
+        if (p >= tipEnter) playTip();
+        else if (p <= tipExit && tipPlayed) resetTip();
+      },
+      wireOutro: (tl, at, outroDur) => {
+        // Clear prior stop dots — no half-ghost anchors on the left.
+        if (dots && dots.length) tl.to(dots, { opacity: 0, duration: 0.08, ease: 'power1.out' }, at + 0.02);
+        if (close) {
+          tl.to(close, { autoAlpha: 1, y: 0, duration: 0.09, ease: 'power2.out' }, at + 0.04);
+        }
+        if (openEnd) {
+          tl.to(openEnd, { color: '#D9A441', duration: 0.07, ease: 'power1.out' }, at + 0.11);
+        }
+        tl.to({}, { duration: Math.max(0.01, outroDur - 0.12) }, at + 0.12);
+      }
+    };
   }
 
   // iPhone/iPad: sticky SHELL + translating track.
   // Never put transform on the sticky node — that kills sticky and the road
   // scrolls away with the text mid-chapter.
-  chapter3Touch(g, sec, track, path, cards, dots) {
+  chapter3Touch(g, sec, track, path, cards, dots, terminus, close, openEnd) {
     const shellH = this.viewportShellH();
     const travel = () => Math.max(window.innerWidth * 2.5, track.scrollWidth - window.innerWidth);
     const settle = () => Math.round(this.viewportShellH() * 0.55);
@@ -1700,7 +1888,7 @@ class Component extends DCLogic {
     track.style.willChange = 'transform';
     track.style.backgroundColor = 'transparent';
 
-    g.set(cards, { opacity: 0, y: 24 });
+    g.set(cards, { opacity: 1, y: 0 });
     g.set(dots, { scale: 0 });
     g.set(track, { x: 0 });
 
@@ -1715,6 +1903,11 @@ class Component extends DCLogic {
       }
     }
 
+    const INTRO = 0.14;
+    const TRAVEL = 0.72;
+    const OUTRO = 0.14;
+    const tip = this.chapter3TerminusState(g, path, terminus, dots, close, openEnd, INTRO + TRAVEL);
+
     const tl = g.timeline({
       scrollTrigger: {
         trigger: sec,
@@ -1723,23 +1916,21 @@ class Component extends DCLogic {
         scrub: this.scrubValue(),
         invalidateOnRefresh: true,
         pin: false,
-        onRefreshInit: applyHeight
+        onRefreshInit: applyHeight,
+        onUpdate: tip.onUpdate,
+        onRefresh: tip.place
       }
     });
-    const INTRO = 0.14;
-    const TRAVEL = 0.72;
-    const OUTRO = 0.14;
     // Same intro/travel/outro as desktop — 1:1 draw/travel lock preserved.
     tl.to({}, { duration: INTRO }, 0);
     tl.fromTo(track, { x: 0 }, { x: () => -travel(), ease: 'none', duration: TRAVEL }, INTRO);
     if (path && usePlugin) tl.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', duration: TRAVEL }, INTRO);
     else if (path && pathLen) tl.fromTo(path, { strokeDashoffset: pathLen }, { strokeDashoffset: 0, ease: 'none', duration: TRAVEL }, INTRO);
-    [0.22, 0.45, 0.65].forEach((t, i) => {
+    [0.25, 0.50, 0.75].forEach((t, i) => {
       const at = INTRO + t * TRAVEL;
-      tl.to(cards[i], { opacity: 1, y: 0, duration: 0.08, ease: 'power2.out' }, at)
-        .to(dots[i], { scale: 1, duration: 0.07, ease: 'back.out(2)' }, at + 0.02);
+      tl.to(dots[i], { scale: 1, duration: 0.07, ease: 'back.out(2)' }, at);
     });
-    tl.to({}, { duration: OUTRO }, INTRO + TRAVEL);
+    tip.wireOutro(tl, INTRO + TRAVEL, OUTRO);
     this.keep(tl);
   }
 
@@ -1833,7 +2024,7 @@ class Component extends DCLogic {
     g.set(els, { opacity: 0 });
     g.set(benefits, { opacity: 0 });
     const order = els.map((e, i) => i);
-    // Benefit plateaus ≥0.14 each; measure only after b2 (≥0.92). Snap mid-plateau.
+    // Single channel: network blooms first, then benefits, then measure→2030.
     const tl = g.timeline({
       scrollTrigger: this.pinScroll(Object.assign(
         this.scrollSpan(sec, '+=400%', !this.isTouch),
@@ -1842,7 +2033,7 @@ class Component extends DCLogic {
           forcePin: !this.isTouch,
           pinType: 'fixed',
           anticipatePin: 0,
-          snap: this.magneticSnap([0.22, 0.52, 0.80, 0.96], 0.10),
+          snap: this.magneticSnap([0.18, 0.48, 0.68, 0.86, 0.96], 0.10),
           onEnter: () => this.sim && this.sim.alpha(0.7).restart(),
           onLeave: () => this.sim && this.sim.stop(),
           onLeaveBack: () => this.sim && this.sim.stop(),
@@ -1851,9 +2042,9 @@ class Component extends DCLogic {
       ))
     });
 
-    // Network node reveal stays progressive across 0.06–0.70 — must not fade benefits early.
+    // Network alone across 0.04–0.34
     order.forEach((idx, k) => {
-      const at = 0.06 + (k / order.length) * 0.64;
+      const at = 0.04 + (k / order.length) * 0.30;
       tl.to(els[idx], { opacity: 1, duration: 0.04, ease: 'none' }, at);
       lines.forEach((l, li) => {
         if (endIdx(links[li].source) === idx || endIdx(links[li].target) === idx) {
@@ -1862,22 +2053,147 @@ class Component extends DCLogic {
       });
     });
 
-    // b0: in 0.08–0.14 · plateau 0.14–0.30 · out 0.30–0.36 · snap 0.22
-    tl.fromTo(benefits[0], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.08)
-      .to(benefits[0], { opacity: 0, y: -20, duration: 0.06, ease: 'power2.in' }, 0.30);
-    // b1: in 0.38–0.44 · plateau 0.44–0.60 · out 0.60–0.66 · snap 0.52
-    tl.fromTo(benefits[1], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.38)
-      .to(benefits[1], { opacity: 0, y: -20, duration: 0.06, ease: 'power2.in' }, 0.60);
-    // b2: in 0.68–0.74 · plateau 0.74–0.86 · snap 0.80
-    tl.fromTo(benefits[2], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.68);
+    // b0: in 0.38–0.44 · plateau 0.44–0.54 · out 0.54–0.58 · snap 0.48
+    tl.fromTo(benefits[0], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.38)
+      .to(benefits[0], { opacity: 0, y: -20, duration: 0.04, ease: 'power2.in' }, 0.54);
+    // b1: in 0.60–0.66 · plateau 0.66–0.76 · out 0.76–0.80 · snap 0.68
+    tl.fromTo(benefits[1], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.60)
+      .to(benefits[1], { opacity: 0, y: -20, duration: 0.04, ease: 'power2.in' }, 0.76);
+    // b2: in 0.82–0.86 · plateau 0.86–0.92 · snap 0.86
+    tl.fromTo(benefits[2], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.04, ease: 'power2.out' }, 0.82);
 
-    // measure→2030 after b2 · hold 0.94–1.00 · snap 0.96
-    tl.to(fill, { scaleX: 1, duration: 0.06, ease: 'power2.inOut' }, 0.88)
-      .to(left, { opacity: 0, duration: 0.03 }, 0.89)
-      .to(goal, { opacity: 0, duration: 0.03 }, 0.91)
-      .to(y2030, { opacity: 1, duration: 0.03 }, 0.94)
+    // measure→2030 · hold · snap 0.96
+    tl.to(fill, { scaleX: 1, duration: 0.05, ease: 'power2.inOut' }, 0.93)
+      .to(left, { opacity: 0, duration: 0.03 }, 0.94)
+      .to(goal, { opacity: 0, duration: 0.03 }, 0.95)
+      .to(y2030, { opacity: 1, duration: 0.03 }, 0.96)
       .to({}, { duration: 0.01 }, 1);
     this.keep(tl);
+  }
+
+  // Finale: short emotional peak + visual ask gesture (no URL required).
+  finaleAsk() {
+    const g = window.gsap;
+    const sec = this.q('[data-finale]');
+    const title = this.q('[data-finale-title]');
+    const lede = this.q('[data-finale-lede]');
+    const kicker = this.q('[data-finale-kicker]');
+    const line = this.q('[data-pilot-line]');
+    const btn = this.q('[data-ask-commit]');
+    if (!sec) return;
+
+    const commitAsk = () => {
+      if (!btn) return;
+      btn.classList.add('is-committed');
+      btn.textContent = 'Pilot greenlit';
+      if (line) g.to(line, { scaleX: 1, duration: 0.25, ease: 'power2.out', overwrite: 'auto' });
+      this.playAskClick();
+    };
+
+    if (btn && !btn._askBound) {
+      btn._askBound = true;
+      btn.addEventListener('click', commitAsk);
+    }
+
+    if (this.reduced) {
+      g.set([title, lede, kicker, btn].filter(Boolean), { autoAlpha: 1, y: 0 });
+      if (line) g.set(line, { scaleX: 1 });
+      return;
+    }
+
+    g.set([title, lede, kicker, btn].filter(Boolean), { autoAlpha: 0, y: 20 });
+    if (line) g.set(line, { scaleX: 0 });
+
+    const tl = g.timeline({
+      scrollTrigger: this.pinScroll(Object.assign(
+        this.scrollSpan(sec, '+=140%'),
+        { snap: this.magneticSnap([0.28, 0.78], 0.10) }
+      ))
+    });
+    tl.to(title, { autoAlpha: 1, y: 0, duration: 0.12, ease: 'power2.out' }, 0.08)
+      .to(lede, { autoAlpha: 1, y: 0, duration: 0.10, ease: 'power2.out' }, 0.22);
+    if (line) tl.to(line, { scaleX: 1, duration: 0.16, ease: 'power2.inOut' }, 0.34);
+    tl.to(kicker, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.42);
+    if (btn) tl.to(btn, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.50);
+    tl.to({}, { duration: 0.01 }, 1);
+    this.keep(tl);
+  }
+
+  // Soft gold hairline from scale problem through story; off on ask.
+  motifContinuity() {
+    const g = window.gsap;
+    const ST = window.ScrollTrigger;
+    const line = this.q('[data-motif-line]');
+    const scene = this.q('[data-scene]');
+    const finale = this.q('[data-finale]');
+    if (!line || !scene) return;
+    g.set(line, { opacity: 0, scaleX: 0.2, transformOrigin: '0% 50%' });
+    this.keep(ST.create({
+      trigger: scene,
+      start: 'top 70%',
+      endTrigger: finale || scene,
+      end: finale ? 'top 75%' : 'bottom top',
+      onEnter: () => g.to(line, { opacity: 0.85, scaleX: 1, duration: 0.7, ease: 'power2.out', overwrite: 'auto' }),
+      onEnterBack: () => g.to(line, { opacity: 0.85, scaleX: 1, duration: 0.45, ease: 'power2.out', overwrite: 'auto' }),
+      onLeave: () => g.to(line, { opacity: 0, duration: 0.35, overwrite: 'auto' }),
+      onLeaveBack: () => g.to(line, { opacity: 0, duration: 0.3, overwrite: 'auto' })
+    }));
+  }
+
+  // Room-friendly: 1–6 jump chapters. No sound bed (async-only / needs assets).
+  bindPresenterMode() {
+    if (this._presenterBound) return;
+    this._presenterBound = true;
+    const targets = [
+      '[data-scene]',
+      '[data-close]',
+      '[data-ch2]',
+      '[data-ch3]',
+      '[data-ch4]',
+      '[data-finale]'
+    ];
+    this._onPresenterKey = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      const idx = parseInt(e.key, 10) - 1;
+      if (idx < 0 || idx >= targets.length) return;
+      const el = this.q(targets[idx]);
+      if (!el) return;
+      e.preventDefault();
+      const top = el.getBoundingClientRect().top + (window.pageYOffset || window.scrollY || 0);
+      if (this.lenis && this.lenis.scrollTo) this.lenis.scrollTo(top, { duration: 1.05 });
+      else window.scrollTo({ top: top, behavior: 'smooth' });
+    };
+    window.addEventListener('keydown', this._onPresenterKey);
+  }
+
+  unbindPresenterMode() {
+    if (this._onPresenterKey) window.removeEventListener('keydown', this._onPresenterKey);
+    this._onPresenterKey = null;
+    this._presenterBound = false;
+  }
+
+  // Tiny confirm click — no audio files; silent if AudioContext blocked.
+  playAskClick() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = this._askAudio || (this._askAudio = new Ctx());
+      if (ctx.state === 'suspended') ctx.resume();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 520;
+      gain.gain.value = 0.0001;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      const t = ctx.currentTime;
+      gain.gain.exponentialRampToValueAtTime(0.045, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+      osc.start(t);
+      osc.stop(t + 0.14);
+    } catch (e) {}
   }
 
   // ground inversion + chapter marker
@@ -1967,6 +2283,7 @@ class Component extends DCLogic {
 
     const marks = [
       ['[data-scene]', '01', 'The scale problem'],
+      ['[data-close]', '01', 'Impossible empathy'],
       ['[data-ch2]', '02', 'Turn the number into a story'],
       ['[data-ch3]', '03', 'The shape of the campaign'],
       ['[data-ch4]', '04', 'Putting the story to work'],
