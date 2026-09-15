@@ -281,6 +281,183 @@
   .t-em-italic { font-style: italic; color: inherit; }
   .t-card-gap { gap: 14px; }
 
+  /* —— Deck type grid: shared rails + measures —— */
+  .deck {
+    --pad-x: clamp(20px, 3.4vw, 52px);
+    --pad-top: 120px;
+    --pad-bottom: 150px;
+    --rail-title: 30%;
+    --rail-media: 42%;
+    --measure-display: 18ch;
+    --measure-lede: 48ch;
+    --measure-evidence: 34ch;
+    --size-display: clamp(36px, 5.4vw, 96px);
+    --size-display-sm: clamp(30px, 4.2vw, 74px);
+    --size-card: clamp(28px, 3.6vw, 56px);
+    --size-lede: clamp(16px, 1.35vw, 20px);
+    --gap-stack: clamp(22px, 2.5vw, 36px);
+    --poster-media-h: min(36vh, 320px);
+  }
+  .deck .t-lede {
+    width: min(100%, var(--measure-lede));
+    max-width: var(--measure-lede);
+    margin-top: var(--gap-stack);
+    font-size: var(--size-lede);
+  }
+  .deck .t-stack { gap: var(--gap-stack); }
+  .type-display {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 500;
+    font-size: var(--size-display);
+    line-height: 1.0;
+    letter-spacing: -0.024em;
+    margin: 0;
+  }
+  .type-display-sm {
+    font-size: var(--size-display-sm);
+    line-height: 1.02;
+    letter-spacing: -0.024em;
+  }
+  .type-card {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 500;
+    font-size: var(--size-card);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .type-lede-body {
+    font-size: var(--size-lede);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* Poster: title/media/caption on fixed rails (opacity stays on beat wrapper) */
+  .layout-poster {
+    position: absolute;
+    inset: 0;
+    display: block;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  .layout-poster .poster-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--rail-title);
+    margin-left: auto;
+    margin-right: auto;
+    width: min(92vw, var(--t-display, var(--measure-display)));
+    max-width: min(92vw, var(--t-display, var(--measure-display)));
+    z-index: 2;
+  }
+  .layout-poster .poster-media {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--rail-media);
+    margin-left: auto;
+    margin-right: auto;
+    width: min(92vw, 42ch);
+    height: var(--poster-media-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+  .layout-poster .poster-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(var(--rail-media) + var(--poster-media-h) + 12px);
+    margin-left: auto;
+    margin-right: auto;
+    width: min(92vw, 42ch);
+    z-index: 2;
+  }
+  .layout-poster.layout-poster--text-only .poster-title {
+    top: var(--rail-title);
+  }
+
+  /* Title + lede: same title rail inside a full-stage frame */
+  .layout-lede-stack {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+    pointer-events: none;
+  }
+  .layout-lede-stack > .lede-stack-inner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--rail-title);
+    margin-left: auto;
+    margin-right: auto;
+    width: min(92vw, 1100px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-stack);
+    pointer-events: auto;
+  }
+  .layout-lede-stack.layout-lede-stack--flow {
+    position: relative;
+    inset: auto;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  }
+  .layout-lede-stack.layout-lede-stack--flow > .lede-stack-inner {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    margin-top: calc(var(--rail-title) - var(--pad-top));
+    /* When rail-title is 30% and pad-top is 120px, approximate title band */
+  }
+  @supports (top: 1%) {
+    .layout-lede-stack.layout-lede-stack--flow {
+      justify-content: flex-start;
+      padding-top: max(var(--pad-top), var(--rail-title));
+    }
+    .layout-lede-stack.layout-lede-stack--flow > .lede-stack-inner {
+      margin-top: 0;
+    }
+  }
+
+  /* Left evidence (ch3 cards / ch4) */
+  .layout-evidence {
+    position: absolute;
+    left: var(--pad-x);
+    top: 22%;
+    max-width: var(--measure-evidence);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-sizing: border-box;
+  }
+  .layout-evidence .evidence-kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  /* Still overlay captions */
+  .media-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: clamp(20px, 3vw, 40px);
+    max-width: min(92%, var(--measure-evidence));
+    color: #F4F0E7;
+    text-shadow: 0 1px 18px rgba(10,21,38,0.55);
+    box-sizing: border-box;
+  }
+
   a { color: #D9A441; text-decoration: none; }
   a:hover { color: #F4F0E7; }
   ::selection { background: #D9A441; color: #0A1526; }
@@ -288,18 +465,20 @@
 </style>
 <script src="assets/daac1b8a-1869-4c5c-a594-c861a57f9290.js"></script>
 </helmet>
-<div ref="{{ rootRef }}" style="background: #0A1526; color: #F4F0E7; font-family: 'Archivo', system-ui, sans-serif;">
+<div ref="{{ rootRef }}" class="deck" style="background: #0A1526; color: #F4F0E7; font-family: 'Archivo', system-ui, sans-serif;">
 
-  <div style="position: fixed; top: 26px; left: clamp(20px, 3.4vw, 52px); z-index: 60; display: flex; gap: 12px; align-items: baseline; font-size: 12px; letter-spacing: 0.06em; mix-blend-mode: difference; color: #8E9AAB;">
+  <div style="position: fixed; top: 26px; left: var(--pad-x); z-index: 60; display: flex; gap: 12px; align-items: baseline; font-size: 12px; letter-spacing: 0.06em; mix-blend-mode: difference; color: #8E9AAB;">
     <span data-chapter-num="" style="color: #D9A441;">01</span>
     <span data-chapter-name="">The scale problem</span>
   </div>
 
-  <section data-ground="navy" style="position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 120px clamp(20px, 3.4vw, 52px) 160px; box-sizing: border-box; background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px); overflow: hidden;">
+  <section data-ground="navy" style="position: relative; min-height: 100vh; box-sizing: border-box; background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px); overflow: hidden;">
     <div data-dotfield="hero" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
-    <div class="t-stack" style="position: relative; z-index: 1;">
-      <h1 data-hero-head="" class="t-box t-justify t-display" style="--t-display: 18ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(42px, 7.4vw, 132px); line-height: 1.0; letter-spacing: -0.025em; margin: 0;" data-bodoni="section">Core VC has a rare<br>kind of ambition</h1>
-      <p data-hero-lede="" class="t-box t-justify t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #C6CEDA; margin: 0;">Create <span class="t-em">one trillion dollars</span> in new wealth for everyday Americans. It is bold, it is measurable, and if achieved it changes the financial lives of millions of people.</p>
+    <div class="layout-lede-stack" style="z-index: 1;">
+      <div class="lede-stack-inner">
+        <h1 data-hero-head="" class="t-box t-justify t-display type-display" style="--t-display: var(--measure-display);" data-bodoni="section">Core VC has a rare<br>kind of ambition</h1>
+        <p data-hero-lede="" class="t-box t-justify t-lede" style="color: #C6CEDA; margin: 0;">Create <span class="t-em">one trillion dollars</span> in new wealth for everyday Americans. It is bold, it is measurable, and if achieved it changes the financial lives of millions of people.</p>
+      </div>
     </div>
   </section>
 
@@ -311,73 +490,75 @@
   </section>
 
   <section data-close="" data-ground="bone" style="position: relative; min-height: 100vh; background-color: #F4F0E7; color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
-    <div data-close-pad="" style="position: relative; min-height: 100vh; padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box;">
-      <div data-beat="bridge">
-        <div class="t-box t-center t-display" style="--t-display: 18ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(36px, 5.4vw, 88px); line-height: 1.02; letter-spacing: -0.024em;" data-bodoni="section">But an ambition this big<br>presents two challenges:</div>
+    <div data-close-pad="" style="position: relative; min-height: 100vh; box-sizing: border-box;">
+      <div data-beat="bridge" class="layout-poster layout-poster--text-only">
+        <div class="poster-title t-box t-center t-display type-display" style="--t-display: var(--measure-display);" data-bodoni="section">But an ambition this big<br>presents two challenges:</div>
       </div>
-      <div data-beat="people">
+      <div data-beat="people" class="layout-poster">
         <div data-dotfield="people" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
-        <div class="t-stack" style="position: relative; z-index: 1; width: min(92vw, 42ch); align-items: center;">
-          <div class="t-box t-center t-display" style="--t-display: 100%; width: 100%; max-width: 100%; white-space: nowrap; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(40px, 6.2vw, 96px); line-height: 1.0; letter-spacing: -0.022em;" data-bodoni="card">The people</div>
-          <div data-silhouette="" aria-hidden="true" style="position: relative; width: min(46vw, 260px); height: min(56vw, 320px); margin: clamp(8px, 1.2vw, 18px) auto 0;">
+        <div class="poster-title t-box t-center t-display type-display" style="--t-display: 12ch; white-space: nowrap;" data-bodoni="card">The people</div>
+        <div class="poster-media">
+          <div data-silhouette="" aria-hidden="true" style="position: relative; width: min(46vw, 220px); height: min(100%, 280px); margin: 0 auto;">
             <div data-silhouette-core="" style="position: absolute; left: 50%; top: 8%; width: 46%; height: 34%; transform: translateX(-50%); border-radius: 50%; background: #2C3949;"></div>
             <div data-silhouette-body="" style="position: absolute; left: 50%; bottom: 6%; width: 78%; height: 52%; transform: translateX(-50%); border-radius: 46% 46% 18% 18%; background: #2C3949;"></div>
             <div data-silhouette-veil="" style="position: absolute; inset: -18%; border-radius: 50%; background: radial-gradient(circle at 50% 42%, rgba(244,240,231,0.05) 0%, rgba(244,240,231,0.55) 48%, #F4F0E7 72%); filter: blur(22px); pointer-events: none;"></div>
           </div>
-          <div class="t-box t-center t-lede" style="width: 100%; max-width: none; font-size: clamp(15px, 1.25vw, 18px); color: #9AA3AD; font-style: italic; margin: clamp(10px, 1.4vw, 20px) 0 0;">don't know it exists</div>
         </div>
+        <div class="poster-caption t-box t-center type-lede-body" style="color: #9AA3AD; font-style: italic;">don't know it exists</div>
       </div>
-      <div data-beat="number">
+      <div data-beat="number" class="layout-poster">
         <div data-dotfield="number" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
-        <div class="t-stack" style="position: relative; z-index: 1; width: min(92vw, 42ch); align-items: center;">
-          <div class="t-box t-center t-display" style="--t-display: 100%; width: 100%; max-width: 100%; white-space: nowrap; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(40px, 6.2vw, 96px); line-height: 1.0; letter-spacing: -0.022em;" data-bodoni="card">The number</div>
-          <div data-heartbeat="" aria-hidden="true" style="position: relative; width: min(78vw, 460px); height: 88px; margin: clamp(14px, 2vw, 28px) auto 0;">
+        <div class="poster-title t-box t-center t-display type-display" style="--t-display: 12ch; white-space: nowrap;" data-bodoni="card">The number</div>
+        <div class="poster-media">
+          <div data-heartbeat="" aria-hidden="true" style="position: relative; width: min(78vw, 460px); height: 88px; margin: 0 auto;">
             <svg data-heartbeat-svg="" viewBox="0 0 460 88" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;">
               <path data-heartbeat-path="" d="M0 44 H118 L132 44 L146 14 L160 74 L174 44 H230 L244 44 L258 20 L272 68 L286 44 H460" fill="none" stroke="#D9A441" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
               <path data-heartbeat-flat="" d="M0 44 H460" fill="none" stroke="#D9A441" stroke-width="2.2" stroke-linecap="round" opacity="0"></path>
             </svg>
             <div data-heartbeat-dot="" style="position: absolute; left: 50%; top: 50%; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; background: #D9A441; box-shadow: 0 0 0 0 rgba(217,164,65,0.45);"></div>
           </div>
-          <div data-feel-line="" class="t-box t-center t-lede" style="width: 100%; max-width: none; font-size: clamp(15px, 1.25vw, 18px); color: #2C3949; margin: clamp(14px, 1.8vw, 24px) 0 0;">A trillion dollars is too big to <span class="t-em">feel</span>.</div>
         </div>
+        <div data-feel-line="" class="poster-caption t-box t-center type-lede-body" style="color: #2C3949;">A trillion dollars is too big to <span class="t-em">feel</span>.</div>
       </div>
-      <div data-beat="question">
-        <div class="t-box t-center t-display" style="--t-display: 16ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(44px, 8.2vw, 148px); line-height: 0.98; letter-spacing: -0.03em;" data-bodoni="mega">So how do you make it<br><span class="t-em">personal</span>?</div>
+      <div data-beat="question" class="layout-poster layout-poster--text-only">
+        <div class="poster-title t-box t-center t-display type-display" style="--t-display: 16ch;" data-bodoni="section">So how do you make it<br><span class="t-em">personal</span>?</div>
       </div>
     </div>
   </section>
 
   <section data-ch2="" data-ground="dark" style="position: relative; min-height: 100vh; background: #0A1526;">
     <div data-ch2-ground="" style="position: absolute; inset: 0; background: #0A1526;"></div>
-    <div data-ch2-pad="" style="position: relative; padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box; display: flex; align-items: center; min-height: 100vh;">
-      <div style="position: relative; width: 100%; max-width: 1500px; margin: 0 auto;">
-        <div data-ch2-cap="title" class="t-stack" style="max-width: min(92vw, 1100px); margin-left: auto; margin-right: auto;">
-          <div class="t-box t-justify t-display" style="--t-display: 14ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(40px, 6.4vw, 116px); line-height: 0.98; letter-spacing: -0.028em;" data-bodoni="section">Turn the number<br>into a story</div>
-          <div class="t-box t-justify t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #E6E2D8; margin: 0;"><span class="t-em-italic">The Road to One Trillion</span> takes a once-in-a-generation pursuit and translates it into a documentary series that carries Core's message through the people, companies and ideas driving it forward.</div>
+    <div data-ch2-pad="" style="position: relative; box-sizing: border-box; min-height: 100vh;">
+      <div style="position: relative; width: 100%; max-width: 1500px; margin: 0 auto; min-height: 100%;">
+        <div data-ch2-cap="title" class="layout-lede-stack">
+          <div class="lede-stack-inner" style="max-width: min(92vw, 1100px);">
+            <div class="t-box t-justify t-display type-display" style="--t-display: var(--measure-display);" data-bodoni="section">Turn the number<br>into a story</div>
+            <div class="t-box t-justify t-lede" style="color: #E6E2D8; margin: 0;"><span class="t-em-italic">The Road to One Trillion</span> takes a once-in-a-generation pursuit and translates it into a documentary series that carries Core's message through the people, companies and ideas driving it forward.</div>
+          </div>
         </div>
-        <div data-ch2-cap="0" style="margin-top: clamp(30px, 4.4vw, 64px); position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
+        <div data-ch2-cap="0" style="position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
           <div data-still-frame="" style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0A1526;">
             <img data-still-img="" src="assets/stills/home.webp" alt="Homebuyer receiving keys in front of a sold house" width="1920" height="1080" decoding="async" style="position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:50% 35%;transform-origin:50% 35%;will-change:transform;filter:grayscale(0.12) contrast(1.1) brightness(0.94) sepia(0.08);">
           </div>
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,21,38,0.02) 0%, rgba(10,21,38,0.12) 45%, rgba(10,21,38,0.68) 74%, rgba(10,21,38,0.94) 100%); pointer-events: none;"></div>
-          <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: clamp(20px, 3vw, 40px); font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(28px, 4vw, 56px); line-height: 1.05; letter-spacing: -0.024em; max-width: min(92%, 28ch); color: #F4F0E7; text-shadow: 0 1px 18px rgba(10,21,38,0.55);" data-bodoni="card">Families buying their<br>first home</div>
+          <div class="media-caption type-card" data-bodoni="card">Families buying their<br>first home</div>
         </div>
-        <div data-ch2-cap="1" style="margin-top: clamp(30px, 4.4vw, 64px); position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
+        <div data-ch2-cap="1" style="position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
           <div data-still-frame="" style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0A1526;">
             <img data-still-img="" src="assets/stills/business.webp" alt="Entrepreneur at work in their business" width="1920" height="1080" decoding="async" style="position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:50% 35%;transform-origin:50% 35%;will-change:transform;filter:grayscale(0.2) contrast(1.1) brightness(0.92) sepia(0.08);">
           </div>
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,21,38,0.08) 0%, rgba(10,21,38,0.55) 58%, rgba(10,21,38,0.9) 100%); pointer-events: none;"></div>
-          <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: clamp(20px, 3vw, 40px); font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(28px, 4vw, 56px); line-height: 1.05; letter-spacing: -0.024em; max-width: min(92%, 34ch); color: #F4F0E7; text-shadow: 0 1px 18px rgba(10,21,38,0.55);" data-bodoni="card">Entrepreneurs starting their first business,<br>and creating new jobs</div>
+          <div class="media-caption type-card" data-bodoni="card">Entrepreneurs starting their first business,<br>and creating new jobs</div>
         </div>
-        <div data-ch2-cap="2" style="margin-top: clamp(30px, 4.4vw, 64px); position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
+        <div data-ch2-cap="2" style="position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
           <div data-still-frame="" style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0A1526;">
             <img data-still-img="" src="assets/stills/care.webp" alt="Clinician with a patient" width="1920" height="1080" decoding="async" style="position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:50% 32%;transform-origin:50% 32%;will-change:transform;filter:grayscale(0.2) contrast(1.1) brightness(0.92) sepia(0.08);">
           </div>
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,21,38,0.08) 0%, rgba(10,21,38,0.55) 58%, rgba(10,21,38,0.9) 100%); pointer-events: none;"></div>
-          <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: clamp(20px, 3vw, 40px); font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(28px, 4vw, 56px); line-height: 1.05; letter-spacing: -0.024em; max-width: min(92%, 36ch); color: #F4F0E7; text-shadow: 0 1px 18px rgba(10,21,38,0.55);" data-bodoni="card">Parents who no longer panic over every runny nose,<br>because the insurance holds</div>
+          <div class="media-caption type-card" data-bodoni="card">Parents who no longer panic over every runny nose,<br>because the insurance holds</div>
         </div>
-        <div data-ch2-cap="made" class="t-box t-justify t-lede" style="margin-top: clamp(30px, 4.4vw, 64px); font-size: clamp(17px, 1.6vw, 24px); line-height: 1.55; color: #F4F0E7;">Nothing needs to be manufactured. The stakes, the characters and the challenge are already in place.</div>
-        <div data-ch2-cap="close" class="t-box t-justify t-display" style="--t-display: 22ch; margin-top: clamp(30px, 4.4vw, 64px); font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 4.8vw, 84px); line-height: 1.05; letter-spacing: -0.028em;" data-bodoni="section">Core has already begun writing<br>an extraordinary story.<br>Now it is time to <span class="t-em">share it</span></div>
+        <div data-ch2-cap="made" class="t-box t-justify t-lede" style="color: #F4F0E7; line-height: 1.55;">Nothing needs to be manufactured. The stakes, the characters and the challenge are already in place.</div>
+        <div data-ch2-cap="close" class="t-box t-justify t-display type-display" style="--t-display: 22ch;" data-bodoni="section">Core has already begun writing<br>an extraordinary story.<br>Now it is time to <span class="t-em">share it</span></div>
       </div>
     </div>
   </section>
@@ -387,36 +568,44 @@
       <svg data-ch3-svg="" viewBox="0 0 4000 400" preserveAspectRatio="none" style="position: absolute; left: 0; top: 58%; width: 400vw; height: 40vh; overflow: visible; pointer-events: none; z-index: 2;">
         <path data-ch3-path="" d="M0,300 C 420,300 560,150 1000,150 C 1420,150 1560,270 2000,250 C 2440,230 2560,110 3000,120 C 3420,130 3620,210 4000,190" fill="none" stroke="#0A1526" stroke-width="3.5" stroke-linecap="round"></path>
       </svg>
-      <div style="flex: 0 0 100vw; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(22px, 2.5vw, 36px); padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box; position: relative;">
-        <div class="t-box t-justify t-display" style="--t-display: 18ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 5.2vw, 92px); line-height: 1.02; letter-spacing: -0.026em;" data-bodoni="section">Designed as a campaign—<br>not a single film</div>
-        <div class="t-box t-justify t-lede" style="font-size: clamp(16px, 1.35vw, 20px); color: #2C3949; margin: 0;"><span class="t-em-italic">The Road to One Trillion</span> is designed as an ongoing documentary campaign—not a single film. More than talking heads describing a better future. We follow the people building it, go inside the companies taking on America's hardest problems, and show what is working, what isn't, and how far there is still to go.</div>
+      <div style="flex: 0 0 100vw; height: 100%; position: relative; box-sizing: border-box;">
+        <div class="layout-lede-stack">
+          <div class="lede-stack-inner">
+            <div class="t-box t-justify t-display type-display" style="--t-display: var(--measure-display);" data-bodoni="section">Designed as a campaign—<br>not a single film</div>
+            <div class="t-box t-justify t-lede" style="color: #2C3949; margin: 0;"><span class="t-em-italic">The Road to One Trillion</span> is designed as an ongoing documentary campaign—not a single film. More than talking heads describing a better future. We follow the people building it, go inside the companies taking on America's hardest problems, and show what is working, what isn't, and how far there is still to go.</div>
+          </div>
+        </div>
       </div>
-      <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box;">
-        <div data-ch3-card="" class="t-card-gap" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column;">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #8A6410;">01</div>
-          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 3.8vw, 62px); line-height: 1.0; letter-spacing: -0.02em;" data-bodoni="card">The <span class="t-em">flagship</span></div>
-          <div style="font-size: clamp(15px, 1.25vw, 19px); line-height: 1.55; color: #2C3949;">A premium long-form documentary establishes the story and introduces the people, companies and challenges at the heart of Core's pursuit.</div>
+      <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0; box-sizing: border-box;">
+        <div data-ch3-card="" class="layout-evidence t-card-gap">
+          <div class="evidence-kicker" style="color: #8A6410;">01</div>
+          <div class="t-balance type-card" data-bodoni="card">The <span class="t-em">flagship</span></div>
+          <div class="type-lede-body" style="color: #2C3949;">A premium long-form documentary establishes the story and introduces the people, companies and challenges at the heart of Core's pursuit.</div>
         </div>
         <div data-ch3-dot="" style="position: absolute; left: 22%; top: 52%; width: 11px; height: 11px; border-radius: 50%; background: #D9A441;"></div>
       </div>
-      <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box;">
-        <div data-ch3-card="" class="t-card-gap" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column;">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #8A6410;">02</div>
-          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 3.8vw, 62px); line-height: 1.0; letter-spacing: -0.02em;" data-bodoni="card">The chapters</div>
-          <div style="font-size: clamp(15px, 1.25vw, 19px); line-height: 1.55; color: #2C3949;">Shorter pieces follow the sparks as they happen. A breakthrough. A setback. A victory.</div>
+      <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0; box-sizing: border-box;">
+        <div data-ch3-card="" class="layout-evidence t-card-gap">
+          <div class="evidence-kicker" style="color: #8A6410;">02</div>
+          <div class="t-balance type-card" data-bodoni="card">The chapters</div>
+          <div class="type-lede-body" style="color: #2C3949;">Shorter pieces follow the sparks as they happen. A breakthrough. A setback. A victory.</div>
         </div>
         <div data-ch3-dot="" style="position: absolute; left: 22%; top: 52%; width: 11px; height: 11px; border-radius: 50%; background: #D9A441;"></div>
       </div>
-      <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box;">
-        <div data-ch3-card="" class="t-card-gap" style="position: absolute; left: clamp(20px, 3.4vw, 52px); top: 22%; max-width: 34ch; display: flex; flex-direction: column;">
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #8A6410;">03</div>
-          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 3.8vw, 62px); line-height: 1.0; letter-spacing: -0.02em;" data-bodoni="card">The journey</div>
-          <div style="font-size: clamp(15px, 1.25vw, 19px); line-height: 1.55; color: #2C3949;">As Core moves toward one trillion, every new person, company, breakthrough and milestone creates another chapter.</div>
+      <div data-ch3-stop="" style="flex: 0 0 78vw; height: 100%; position: relative; padding: 0; box-sizing: border-box;">
+        <div data-ch3-card="" class="layout-evidence t-card-gap">
+          <div class="evidence-kicker" style="color: #8A6410;">03</div>
+          <div class="t-balance type-card" data-bodoni="card">The journey</div>
+          <div class="type-lede-body" style="color: #2C3949;">As Core moves toward one trillion, every new person, company, breakthrough and milestone creates another chapter.</div>
         </div>
         <div data-ch3-dot="" style="position: absolute; left: 22%; top: 52%; width: 11px; height: 11px; border-radius: 50%; background: #D9A441;"></div>
       </div>
-      <div style="flex: 0 0 66vw; height: 100%; display: flex; align-items: center; justify-content: center; padding: 0 clamp(20px, 3.4vw, 52px); box-sizing: border-box;">
-        <div class="t-box t-justify t-display" style="--t-display: 28ch; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(30px, 4.2vw, 74px); line-height: 1.02; letter-spacing: -0.024em;" data-bodoni="section">Real people, real stakes, and a real outcome<br>that hasn't been decided yet</div>
+      <div style="flex: 0 0 66vw; height: 100%; position: relative; box-sizing: border-box;">
+        <div class="layout-lede-stack">
+          <div class="lede-stack-inner">
+            <div class="t-box t-justify t-display type-display type-display-sm" style="--t-display: 28ch;" data-bodoni="section">Real people, real stakes, and a real outcome<br>that hasn't been decided yet</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -436,37 +625,39 @@
       <div data-ch4-node="investors" data-kind="role" style="position: absolute; left: 0; top: 0; opacity: 0; font-size: 12px; letter-spacing: 0.04em; color: #8E9AAB; white-space: nowrap; display: flex; align-items: center; gap: 8px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #4A5769; display: block;"></span>investors</div>
       <div data-ch4-node="viewers" data-kind="role" style="position: absolute; left: 0; top: 0; opacity: 0; font-size: 12px; letter-spacing: 0.04em; color: #8E9AAB; white-space: nowrap; display: flex; align-items: center; gap: 8px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #4A5769; display: block;"></span>viewers</div>
     </div>
-    <div data-ch4-col="" style="position: relative; width: 44%; min-width: 320px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 120px clamp(20px, 3.4vw, 52px) 150px; box-sizing: border-box;">
-      <div data-ch4-head="" style="display: flex; flex-direction: column; gap: clamp(22px, 2.5vw, 36px);">
-        <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(34px, 4.6vw, 82px); line-height: 0.98; letter-spacing: -0.026em; max-width: 12ch;" data-bodoni="section">Putting the story to work</div>
-        <div style="font-size: clamp(16px, 1.3vw, 19px); line-height: 1.6; color: #C6CEDA; max-width: 42ch;">A living documentary property that grows alongside the pursuit.</div>
+    <div data-ch4-col="" style="position: relative; width: 44%; min-width: 320px; min-height: 100vh; box-sizing: border-box; padding: 0;">
+      <div data-ch4-head="" style="position: absolute; left: var(--pad-x); right: var(--pad-x); top: var(--rail-title); display: flex; flex-direction: column; gap: var(--gap-stack); max-width: 42ch;">
+        <div class="t-balance type-display" style="max-width: 12ch;" data-bodoni="section">Putting the story to work</div>
+        <div class="type-lede-body" style="color: #C6CEDA; max-width: 42ch;">A living documentary property that grows alongside the pursuit.</div>
       </div>
-      <div style="position: relative; margin-top: clamp(28px, 3.5vw, 52px); min-height: 240px;">
+      <div data-ch4-benefits="" style="position: absolute; left: var(--pad-x); right: var(--pad-x); top: calc(var(--rail-title) + 28vh); min-height: 240px; max-width: 42ch;">
         <div data-benefit="0" class="t-card-gap" style="display: flex; flex-direction: column; max-width: 42ch; margin-bottom: 30px;">
-          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(24px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.018em;" data-bodoni="card">Find the next generation</div>
-          <div style="font-size: clamp(15px, 1.25vw, 18px); line-height: 1.55; color: #C6CEDA;">Put Core's philosophy in front of entrepreneurs already trying to solve the problems Core cares about, and meet them earlier than anyone else does.</div>
+          <div class="t-balance type-card" data-bodoni="card">Find the next generation</div>
+          <div class="type-lede-body" style="color: #C6CEDA;">Put Core's philosophy in front of entrepreneurs already trying to solve the problems Core cares about, and meet them earlier than anyone else does.</div>
         </div>
         <div data-benefit="1" class="t-card-gap" style="display: flex; flex-direction: column; max-width: 42ch; margin-bottom: 30px;">
-          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(24px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.018em;" data-bodoni="card">Amplify the portfolio</div>
-          <div style="font-size: clamp(15px, 1.25vw, 18px); line-height: 1.55; color: #C6CEDA;">Give exceptional portfolio companies a premium platform to tell their stories, expand their reach, and bring new people into the ecosystem.</div>
+          <div class="t-balance type-card" data-bodoni="card">Amplify the portfolio</div>
+          <div class="type-lede-body" style="color: #C6CEDA;">Give exceptional portfolio companies a premium platform to tell their stories, expand their reach, and bring new people into the ecosystem.</div>
         </div>
         <div data-benefit="2" class="t-card-gap" style="display: flex; flex-direction: column; max-width: 42ch; margin-bottom: 30px;">
-          <div class="t-balance" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(24px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.018em;" data-bodoni="card">Build the <span class="t-em">network</span></div>
-          <div style="font-size: clamp(15px, 1.25vw, 18px); line-height: 1.55; color: #C6CEDA;">Every founder, company, customer, expert, investor and viewer brought into the story creates new connections, and new opportunities for Core.</div>
+          <div class="t-balance type-card" data-bodoni="card">Build the <span class="t-em">network</span></div>
+          <div class="type-lede-body" style="color: #C6CEDA;">Every founder, company, customer, expert, investor and viewer brought into the story creates new connections, and new opportunities for Core.</div>
         </div>
       </div>
     </div>
   </section>
 
-  <section data-finale="" data-ground="bone" style="position: relative; min-height: 100vh; background-color: #F4F0E7; color: #0A1526; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(28px, 3.5vw, 48px); padding: 140px clamp(20px, 3.4vw, 52px) 180px; box-sizing: border-box; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
-    <div class="t-stack" style="width: min(92vw, 28ch);">
-      <div class="t-box t-center t-display" style="--t-display: 100%; width: 100%; max-width: 100%; font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: clamp(36px, 5.4vw, 96px); line-height: 0.98; letter-spacing: -0.028em;" data-bodoni="section">Make one trillion<br><span class="t-em">personal</span></div>
-      <div class="t-box t-center t-lede" style="width: 100%; max-width: none; font-size: clamp(16px, 1.3vw, 19px); color: #2C3949; margin: 0;">Greenlight the <span class="t-em">pilot</span> chapter—and put the road in motion.</div>
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #8A6410; text-align: center;">THE ASK · PILOT CHAPTER</div>
+  <section data-finale="" data-ground="bone" style="position: relative; min-height: 100vh; background-color: #F4F0E7; color: #0A1526; box-sizing: border-box; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
+    <div class="layout-lede-stack">
+      <div class="lede-stack-inner" style="width: min(92vw, 28ch);">
+        <div class="t-box t-center t-display type-display" style="--t-display: 100%; width: 100%; max-width: 100%;" data-bodoni="section">Make one trillion<br><span class="t-em">personal</span></div>
+        <div class="t-box t-center type-lede-body" style="width: 100%; max-width: none; color: #2C3949;">Greenlight the <span class="t-em">pilot</span> chapter—and put the road in motion.</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #8A6410; text-align: center;">THE ASK · PILOT CHAPTER</div>
+      </div>
     </div>
   </section>
 
-  <div data-measure-bar="" style="position: fixed; left: clamp(20px, 3.4vw, 52px); right: clamp(20px, 3.4vw, 52px); bottom: 40px; z-index: 55; pointer-events: none; opacity: 0; visibility: hidden;">
+  <div data-measure-bar="" style="position: fixed; left: var(--pad-x); right: var(--pad-x); bottom: 40px; z-index: 55; pointer-events: none; opacity: 0; visibility: hidden;">
     <div data-measure-track="" style="position: relative; height: 3px; border-radius: 2px; background: #253349; overflow: hidden;">
       <div data-measure-fill="" style="position: absolute; left: 0; top: 0; height: 100%; width: 100%; border-radius: 2px; background: #D9A441; transform: scaleX(0.415); transform-origin: 0% 50%;"></div>
     </div>
@@ -915,9 +1106,9 @@ class Component extends DCLogic {
     if (this.isTouch) {
       this.touchStickyStage(this.q('[data-scene]'), 1 + (this.cfg.lengthVh || 1.5), { allowYBleed: true });
       this.touchStickyStage(this.q('[data-close]'), 5.0);
-      this.touchStickyStage(this.q('[data-ch2]'), 4.4);
+      this.touchStickyStage(this.q('[data-ch2]'), 5.0);
       // ch3 height/overflow owned by chapter3Touch()
-      this.touchStickyStage(this.q('[data-ch4]'), 3.8);
+      this.touchStickyStage(this.q('[data-ch4]'), 5.0);
     } else {
       viewport(this.q('[data-close]'));
       viewport(this.q('[data-ch2]'));
@@ -933,8 +1124,8 @@ class Component extends DCLogic {
       cpad.style.inset = '0';
       cpad.style.minHeight = '0';
     }
-    // Bridge / people / number / question each own the full close stage as centered poster beats.
-    // Set layout via native style — gsap.set mangles padding shorthand with clamp().
+    // Poster beats: full stage; rails via CSS (.layout-poster). Opacity stays on beat wrapper.
+    // Do NOT flex-center the whole stack — that made titles jump by content height.
     ['bridge', 'people', 'number', 'question'].forEach((k) => {
       const el = this.q('[data-beat="' + k + '"]');
       if (!el) return;
@@ -946,13 +1137,13 @@ class Component extends DCLogic {
       el.style.padding = '0';
       el.style.margin = '0';
       el.style.boxSizing = 'border-box';
-      el.style.display = 'flex';
-      el.style.flexDirection = 'column';
-      el.style.alignItems = 'center';
-      el.style.justifyContent = 'center';
+      el.style.display = 'block';
       el.style.width = '100%';
       el.style.maxWidth = 'none';
       el.style.textAlign = 'center';
+      el.style.justifyContent = '';
+      el.style.alignItems = '';
+      el.style.flexDirection = '';
     });
 
     const p2 = this.q('[data-ch2-pad]');
@@ -960,6 +1151,21 @@ class Component extends DCLogic {
       p2.style.position = 'absolute';
       p2.style.inset = '0';
       p2.style.minHeight = '0';
+      const wrap = p2.firstElementChild;
+      if (wrap) {
+        wrap.style.position = 'relative';
+        wrap.style.width = '100%';
+        wrap.style.height = '100%';
+        wrap.style.minHeight = '100%';
+        wrap.style.maxWidth = '1500px';
+        wrap.style.margin = '0 auto';
+      }
+    }
+    const ch2Title = this.q('[data-ch2-cap="title"]');
+    if (ch2Title) {
+      ch2Title.style.position = 'absolute';
+      ch2Title.style.inset = '0';
+      ch2Title.style.margin = '0';
     }
     // Still cards share one fixed stage so hard-cuts don't jump.
     ['0', '1', '2'].forEach((k) => {
@@ -979,18 +1185,23 @@ class Component extends DCLogic {
         right: 'auto'
       });
     });
-    // Text holds (made/close) also share a stable center slot.
+    // Text holds (made/close) share a stable title-rail slot (not content-height center).
+    // Avoid translateX centering — GSAP y tweens would overwrite transform.
     ['made', 'close'].forEach((k) => {
       const el = this.q('[data-ch2-cap="' + k + '"]');
       if (!el) return;
-      g.set(el, {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: '50%',
-        marginTop: 0,
-        yPercent: -50
-      });
+      el.style.position = 'absolute';
+      el.style.left = '0';
+      el.style.right = '0';
+      el.style.top = 'var(--rail-title)';
+      el.style.transform = '';
+      el.style.marginTop = '0';
+      el.style.marginLeft = 'auto';
+      el.style.marginRight = 'auto';
+      el.style.width = 'min(92vw, 48ch)';
+      el.style.maxWidth = '100%';
+      el.style.boxSizing = 'border-box';
+      if (window.gsap) window.gsap.set(el, { clearProps: 'yPercent,xPercent,x' });
     });
 
     const ch3 = this.q('[data-ch3]');
@@ -1328,32 +1539,33 @@ class Component extends DCLogic {
     [still0, still1, still2].filter(Boolean).forEach((img) => g.set(img, { scale: 1.04, x: 0, y: 0 }));
 
     // Wide plateaus, hard gaps (no still overlap), snap at hold centers.
+    // made ≥0.10 / close ≥0.06 full-frame — tail was previously uncatchable.
     const tl = g.timeline({
       scrollTrigger: this.pinScroll(Object.assign(
-        this.scrollSpan(sec, '+=340%'),
-        { snap: this.magneticSnap([0.06, 0.23, 0.48, 0.73, 0.92, 0.99], 0.09) }
+        this.scrollSpan(sec, '+=400%'),
+        { snap: this.magneticSnap([0.06, 0.21, 0.44, 0.67, 0.89, 0.99], 0.09) }
       ))
     });
 
     tl.to(title, { opacity: 0, duration: 0.06, ease: 'power1.inOut' }, 0.04);
 
-    // c0: in 0.10–0.18 · plateau 0.18–0.28 · out 0.28–0.33 · snap 0.23
-    tl.to(c0, { opacity: 1, duration: 0.08, ease: 'power1.out' }, 0.10)
-      .to(c0, { opacity: 0, duration: 0.05, ease: 'power1.inOut' }, 0.28);
-    if (still0) tl.fromTo(still0, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.23 }, 0.10);
+    // c0: in 0.10–0.16 · plateau 0.16–0.26 · out 0.26–0.31 · snap 0.21
+    tl.to(c0, { opacity: 1, duration: 0.06, ease: 'power1.out' }, 0.10)
+      .to(c0, { opacity: 0, duration: 0.05, ease: 'power1.inOut' }, 0.26);
+    if (still0) tl.fromTo(still0, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.21 }, 0.10);
 
-    // c1: in 0.35–0.43 · plateau 0.43–0.53 · out 0.53–0.58 · snap 0.48
-    tl.to(c1, { opacity: 1, duration: 0.08, ease: 'power1.out' }, 0.35)
-      .to(c1, { opacity: 0, duration: 0.05, ease: 'power1.inOut' }, 0.53);
-    if (still1) tl.fromTo(still1, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.23 }, 0.35);
+    // c1: in 0.33–0.39 · plateau 0.39–0.49 · out 0.49–0.54 · snap 0.44
+    tl.to(c1, { opacity: 1, duration: 0.06, ease: 'power1.out' }, 0.33)
+      .to(c1, { opacity: 0, duration: 0.05, ease: 'power1.inOut' }, 0.49);
+    if (still1) tl.fromTo(still1, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.21 }, 0.33);
 
-    // c2: in 0.60–0.68 · plateau 0.68–0.78 · out 0.78–0.82 · snap 0.73
-    tl.to(c2, { opacity: 1, duration: 0.08, ease: 'power1.out' }, 0.60)
-      .to(c2, { opacity: 0, duration: 0.04, ease: 'power1.inOut' }, 0.78);
-    if (still2) tl.fromTo(still2, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.22 }, 0.60);
+    // c2: in 0.56–0.62 · plateau 0.62–0.72 · out 0.72–0.76 · snap 0.67
+    tl.to(c2, { opacity: 1, duration: 0.06, ease: 'power1.out' }, 0.56)
+      .to(c2, { opacity: 0, duration: 0.04, ease: 'power1.inOut' }, 0.72);
+    if (still2) tl.fromTo(still2, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.20 }, 0.56);
 
-    // made: in 0.84–0.90 · plateau 0.90–0.94 · out 0.94–0.96 · snap 0.92
-    tl.fromTo(made, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.84)
+    // made: in 0.78–0.84 · plateau 0.84–0.94 · out 0.94–0.96 · snap 0.89
+    tl.fromTo(made, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.78)
       .to(made, { opacity: 0, y: -12, duration: 0.02, ease: 'power2.in' }, 0.94);
 
     // close: in 0.97–1.00 · hold · snap 0.99
@@ -1417,7 +1629,9 @@ class Component extends DCLogic {
         invalidateOnRefresh: true,
         forcePin: true,
         pinType: 'fixed',
-        anticipatePin: 0
+        anticipatePin: 0,
+        // Gentle card stops only — no timeline stretch; drawSVG stays 1:1 with travel.
+        snap: this.magneticSnap([0, 0.22, 0.45, 0.65, 0.92], 0.08)
       })
     });
     // Keep drawSVG locked 1:1 with horizontal travel. If the stroke lags the
@@ -1608,14 +1822,16 @@ class Component extends DCLogic {
     g.set(els, { opacity: 0 });
     g.set(benefits, { opacity: 0 });
     const order = els.map((e, i) => i);
+    // Benefit plateaus ≥0.14 each; measure only after b2 (≥0.92). Snap mid-plateau.
     const tl = g.timeline({
       scrollTrigger: this.pinScroll(Object.assign(
-        this.scrollSpan(sec, '+=280%', !this.isTouch),
+        this.scrollSpan(sec, '+=400%', !this.isTouch),
         {
           // Touch uses sticky stage from lockScenes — never force a pin yank here.
           forcePin: !this.isTouch,
           pinType: 'fixed',
           anticipatePin: 0,
+          snap: this.magneticSnap([0.22, 0.52, 0.81, 0.96], 0.10),
           onEnter: () => this.sim && this.sim.alpha(0.7).restart(),
           onLeave: () => this.sim && this.sim.stop(),
           onLeaveBack: () => this.sim && this.sim.stop(),
@@ -1624,8 +1840,9 @@ class Component extends DCLogic {
       ))
     });
 
+    // Network node reveal stays progressive across 0.06–0.70 — must not fade benefits early.
     order.forEach((idx, k) => {
-      const at = 0.06 + (k / order.length) * 0.6;
+      const at = 0.06 + (k / order.length) * 0.64;
       tl.to(els[idx], { opacity: 1, duration: 0.04, ease: 'none' }, at);
       lines.forEach((l, li) => {
         if (endIdx(links[li].source) === idx || endIdx(links[li].target) === idx) {
@@ -1634,15 +1851,20 @@ class Component extends DCLogic {
       });
     });
 
-    [0.1, 0.34, 0.58].forEach((at, i) => {
-      tl.fromTo(benefits[i], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, at);
-      if (i < 2) tl.to(benefits[i], { opacity: 0, y: -20, duration: 0.05, ease: 'power2.in' }, [0.3, 0.54][i]);
-    });
+    // b0: in 0.08–0.14 · plateau 0.14–0.30 · out 0.30–0.36 · snap 0.22
+    tl.fromTo(benefits[0], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.08)
+      .to(benefits[0], { opacity: 0, y: -20, duration: 0.06, ease: 'power2.in' }, 0.30);
+    // b1: in 0.38–0.44 · plateau 0.44–0.60 · out 0.60–0.66 · snap 0.52
+    tl.fromTo(benefits[1], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.38)
+      .to(benefits[1], { opacity: 0, y: -20, duration: 0.06, ease: 'power2.in' }, 0.60);
+    // b2: in 0.68–0.74 · plateau 0.74–0.90 · hold · snap 0.81
+    tl.fromTo(benefits[2], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.68);
 
-    tl.to(fill, { scaleX: 1, duration: 0.16, ease: 'power2.inOut' }, 0.8)
-      .to(left, { opacity: 0, duration: 0.06 }, 0.82)
-      .to(goal, { opacity: 0, duration: 0.05 }, 0.86)
-      .to(y2030, { opacity: 1, duration: 0.06 }, 0.9);
+    // measure→2030 after b2 plateau (≥0.92) · snap 0.96
+    tl.to(fill, { scaleX: 1, duration: 0.08, ease: 'power2.inOut' }, 0.92)
+      .to(left, { opacity: 0, duration: 0.04 }, 0.93)
+      .to(goal, { opacity: 0, duration: 0.03 }, 0.95)
+      .to(y2030, { opacity: 1, duration: 0.04 }, 0.96);
     this.keep(tl);
   }
 
