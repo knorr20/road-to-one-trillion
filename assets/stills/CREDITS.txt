@@ -3,6 +3,7 @@ Stills sourced from Pexels (free license: https://www.pexels.com/license/)
 home.webp     — Pexels #8293745 — keys handover at house with SOLD sign
 business.webp — Pexels #3807517 — mechanic at work (entrepreneur / jobs)
 care.webp     — Pexels #5215017 — clinician with patient (care that holds)
+people.webp   — Pexels #109919 — everyday crowd crossing a city street (The People beat)
 
 Processed for documentary grade (desat / contrast / warm tint) for The Road to One Trillion.
 Delivered as WebP ~1920x1080 for the chapter-2 Ken Burns montage.

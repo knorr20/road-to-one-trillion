@@ -331,6 +331,14 @@
     line-height: 1.55;
     margin: 0;
   }
+  .type-payoff {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 500;
+    font-size: clamp(24px, 3.2vw, 48px);
+    line-height: 1.12;
+    letter-spacing: -0.022em;
+    margin: 0;
+  }
   .series-title-lift {
     font-family: 'Bodoni Moda', serif;
     font-weight: 500;
@@ -382,6 +390,19 @@
     color: #8A6410;
     border-bottom-color: #8A6410;
   }
+  [data-finale] .ask-commit {
+    margin-top: calc(var(--gap-stack) + 20px);
+  }
+  [data-finale-tag] {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 500;
+    font-size: clamp(18px, 1.5vw, 24px);
+    line-height: 1.22;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-wrap: balance;
+    color: #2C3949;
+  }
   .motif-hairline {
     position: fixed;
     top: 0;
@@ -392,6 +413,10 @@
     opacity: 0;
     pointer-events: none;
     z-index: 58;
+  }
+  /* Ch4 is a two-column pin: sit the copy higher so title + card fit above the measure bar. */
+  [data-ch4] {
+    --rail-title: 18%;
   }
   /* iPad / narrow: stack ch4 so network + benefits don't collide */
   @media (max-width: 980px), (pointer: coarse) and (max-height: 860px) {
@@ -474,6 +499,38 @@
     width: min(92vw, 42ch);
     z-index: 2;
   }
+  .layout-poster .poster-lockup {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--rail-title);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(8px, 1.1vw, 16px);
+    pointer-events: none;
+  }
+  .layout-poster .poster-lockup .poster-title {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: auto;
+    max-width: none;
+  }
+  .layout-poster .poster-lockup .poster-payoff {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    width: min(92vw, 20ch);
+    max-width: min(92vw, 20ch);
+    color: #0A1526;
+  }
+  .layout-poster.layout-poster--bleed .poster-title,
+  .layout-poster.layout-poster--bleed .poster-payoff {
+    text-shadow: 0 1px 18px rgba(244,240,231,0.85);
+  }
   .layout-poster.layout-poster--text-only .poster-title {
     top: var(--rail-title);
   }
@@ -515,7 +572,6 @@
     top: auto;
     transform: none;
     margin-top: calc(var(--rail-title) - var(--pad-top));
-    /* When rail-title is 30% and pad-top is 120px, approximate title band */
   }
   @supports (top: 1%) {
     .layout-lede-stack.layout-lede-stack--flow {
@@ -581,7 +637,7 @@
     <div class="layout-lede-stack" style="z-index: 1;">
       <div class="lede-stack-inner">
         <h1 data-hero-head="" class="t-box t-justify t-display type-display" style="--t-display: var(--measure-display);" data-bodoni="section">Core VC has a rare<br>kind of ambition</h1>
-        <p data-hero-lede="" class="t-box t-justify t-lede" style="color: #C6CEDA; margin: 0;">Create <span class="t-em">one trillion dollars</span> in new wealth for everyday Americans. It is bold, it is measurable, and if achieved it changes the financial lives of millions of people.</p>
+        <p data-hero-lede="" class="t-box t-justify t-lede" style="color: #C6CEDA; margin: 0;">Create <span class="t-em">one trillion dollars</span> in new wealth for everyday Americans. It's bold. It's measurable. And if achieved it changes the financial lives of millions of people.</p>
       </div>
     </div>
   </section>
@@ -598,31 +654,24 @@
       <div data-beat="bridge" class="layout-poster layout-poster--text-only">
         <div class="poster-title t-box t-center t-display type-display" style="--t-display: var(--measure-display);" data-bodoni="section">But an ambition this big<br>presents two challenges:</div>
       </div>
-      <div data-beat="people" class="layout-poster">
+      <div data-beat="people" class="layout-poster layout-poster--bleed">
         <div data-dotfield="people" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
-        <div class="poster-title t-box t-center t-display type-display" style="--t-display: 12ch; white-space: nowrap;" data-bodoni="card">The people</div>
-        <div class="poster-media">
-          <div data-silhouette="" aria-hidden="true" style="position: relative; width: min(46vw, 220px); height: min(100%, 280px); margin: 0 auto;">
-            <div data-silhouette-core="" style="position: absolute; left: 50%; top: 8%; width: 46%; height: 34%; transform: translateX(-50%); border-radius: 50%; background: #2C3949;"></div>
-            <div data-silhouette-body="" style="position: absolute; left: 50%; bottom: 6%; width: 78%; height: 52%; transform: translateX(-50%); border-radius: 46% 46% 18% 18%; background: #2C3949;"></div>
-            <div data-silhouette-veil="" style="position: absolute; inset: -18%; border-radius: 50%; background: radial-gradient(circle at 50% 42%, rgba(244,240,231,0.05) 0%, rgba(244,240,231,0.55) 48%, #F4F0E7 72%); filter: blur(22px); pointer-events: none;"></div>
-          </div>
+        <div data-silhouette="" style="position: absolute; inset: 0; overflow: hidden; z-index: 1;">
+          <img src="assets/stills/people.webp" alt="Everyday people crossing a city street" width="1600" height="900" decoding="async" style="position: absolute; inset: -10%; width: 120%; height: 120%; object-fit: cover; object-position: 50% 42%; filter: blur(8px) saturate(0.72) contrast(1.06) brightness(0.9);">
+          <div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(244,240,231,0.78) 0%, rgba(244,240,231,0.28) 36%, rgba(244,240,231,0.2) 58%, rgba(244,240,231,0.82) 100%);"></div>
         </div>
-        <div class="poster-caption t-box t-center type-lede-body" style="color: #9AA3AD; font-style: italic;">don't know it exists</div>
+        <div class="poster-lockup">
+          <div class="poster-title t-box t-center t-display type-display" style="--t-display: 12ch; white-space: nowrap;" data-bodoni="card">The people</div>
+          <div class="poster-payoff t-box t-center type-display-sm" style="font-style: italic;" data-bodoni="card">don't know it exists</div>
+        </div>
       </div>
-      <div data-beat="number" class="layout-poster">
+      <div data-beat="number" class="layout-poster layout-poster--bleed">
         <div data-dotfield="number" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
-        <div class="poster-title t-box t-center t-display type-display" style="--t-display: 12ch; white-space: nowrap;" data-bodoni="card">The number</div>
-        <div class="poster-media">
-          <div data-heartbeat="" aria-hidden="true" style="position: relative; width: min(78vw, 460px); height: 88px; margin: 0 auto;">
-            <svg data-heartbeat-svg="" viewBox="0 0 460 88" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;">
-              <path data-heartbeat-path="" d="M0 44 H118 L132 44 L146 14 L160 74 L174 44 H230 L244 44 L258 20 L272 68 L286 44 H460" fill="none" stroke="#D9A441" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path data-heartbeat-flat="" d="M0 44 H460" fill="none" stroke="#D9A441" stroke-width="2.2" stroke-linecap="round" opacity="0"></path>
-            </svg>
-            <div data-heartbeat-dot="" style="position: absolute; left: 50%; top: 50%; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; background: #D9A441; box-shadow: 0 0 0 0 rgba(217,164,65,0.45);"></div>
-          </div>
+        <div data-number-storm="" aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;"></div>
+        <div class="poster-lockup">
+          <div class="poster-title t-box t-center t-display type-display" style="--t-display: 12ch; white-space: nowrap;" data-bodoni="card">The number</div>
+          <div data-feel-line="" class="poster-payoff t-box t-center type-display-sm" data-bodoni="card">A trillion dollars is<br>too big to <span class="t-em">feel</span>.</div>
         </div>
-        <div data-feel-line="" class="poster-caption t-box t-center type-lede-body" style="color: #2C3949;">A trillion dollars is too big to <span class="t-em">feel</span>.</div>
       </div>
       <div data-beat="question" class="layout-poster layout-poster--text-only">
         <div class="poster-title t-box t-center t-display type-display" style="--t-display: 16ch;" data-bodoni="section">So how do you make it<br><span class="t-em">personal</span>?</div>
@@ -641,6 +690,7 @@
             <div class="t-box t-justify t-lede" style="color: #E6E2D8; margin: 0;">takes a once-in-a-generation pursuit and translates it into a documentary series that carries Core's message through the people, companies and ideas driving it forward.</div>
           </div>
         </div>
+        <div data-ch2-cap="bridge" class="t-box t-center t-display type-display" style="--t-display: 20ch;" data-bodoni="section">Now we're not just talking<br>about a number.<br>We're talking about…</div>
         <div data-ch2-cap="0" style="position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
           <div data-still-frame="" style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0A1526;">
             <img data-still-img="" src="assets/stills/home.webp" alt="Homebuyer receiving keys in front of a sold house" width="1920" height="1080" decoding="async" style="position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:50% 35%;transform-origin:50% 35%;will-change:transform;filter:grayscale(0.12) contrast(1.1) brightness(0.94) sepia(0.08);">
@@ -660,10 +710,22 @@
             <img data-still-img="" src="assets/stills/care.webp" alt="Clinician with a patient" width="1920" height="1080" decoding="async" style="position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:50% 32%;transform-origin:50% 32%;will-change:transform;filter:grayscale(0.2) contrast(1.1) brightness(0.92) sepia(0.08);">
           </div>
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,21,38,0.08) 0%, rgba(10,21,38,0.55) 58%, rgba(10,21,38,0.9) 100%); pointer-events: none;"></div>
-          <div class="media-caption type-card" data-bodoni="card">Parents who no longer panic over every runny nose,<br>because the insurance holds</div>
+          <div class="media-caption type-card" data-bodoni="card">Parents who don't have to panic over every runny nose,<br>because they have insurance they can count on.</div>
         </div>
-        <div data-ch2-cap="made" class="t-box t-justify t-lede" style="color: #F4F0E7; line-height: 1.55;">Nothing needs to be manufactured. The stakes, the characters and the challenge are already in place.</div>
-        <div data-ch2-cap="close" class="t-box t-justify t-display type-display" style="--t-display: 22ch;" data-bodoni="section">Core has already begun writing<br>an extraordinary story.<br>Now it is time to <span class="t-em">share it</span></div>
+        <div data-ch2-cap="story" class="layout-lede-stack" style="--rail-title: 16%; --gap-stack: 22px;">
+          <div class="lede-stack-inner" style="width: min(92vw, 680px); max-width: min(92vw, 680px); font-size: 16px; align-items: flex-start;">
+            <div data-story-title="" class="type-display" data-bodoni="section" style="line-height: 0.96; letter-spacing: -0.028em; white-space: nowrap;">A story already<br><span class="t-em" style="font-style: italic;">underway</span></div>
+            <div data-story-rule="" style="width: 42px; height: 2px; background: #D9A441; flex: 0 0 auto;"></div>
+            <div data-story-slot="" style="position: relative; width: 100%;">
+              <div data-story-graf="1" class="t-box t-lede" style="color: #E6E2D8; margin: 0; font-size: clamp(18px, 1.55vw, 23px); line-height: 1.45;">Part of what makes <span class="t-em-italic">The Road to One Trillion</span> so compelling is that nothing needs to be manufactured. We're stepping into something that's already in motion. The high stakes, the relatable characters, and the extraordinary challenge are all naturally in place.</div>
+              <div data-story-beat="2" style="display: flex; flex-direction: column; gap: 16px;">
+                <div data-story-graf="2" class="t-box type-lede-body" style="color: #E6E2D8; margin: 0; font-size: clamp(18px, 1.55vw, 23px); line-height: 1.45;">This is more than a series of talking heads talking about a better future. We follow the people making it. We go inside the companies taking on some of America's biggest challenges. We meet the people whose lives are being changed. We see what's working, what isn't, and how far there is still to go.</div>
+                <div data-story-graf="3" class="t-box type-lede-body" style="color: #C6CEDA; margin: 0; font-size: clamp(17px, 1.45vw, 21px); line-height: 1.45;">And along the way, we see something deeply inspiring: some of the country's biggest challenges are being met by people who refuse to accept that they can't be solved.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div data-ch2-cap="close" class="t-box t-center t-display type-display" style="--t-display: 22ch;" data-bodoni="section">Core has already begun writing<br>an extraordinary story.<br>Now it's time to <span class="t-em">share it</span></div>
       </div>
     </div>
   </section>
@@ -735,11 +797,11 @@
       <div data-ch4-node="viewers" data-kind="role" style="position: absolute; left: 0; top: 0; opacity: 0; font-size: 12px; letter-spacing: 0.04em; color: #8E9AAB; white-space: nowrap; display: flex; align-items: center; gap: 8px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #4A5769; display: block;"></span>viewers</div>
     </div>
     <div data-ch4-col="" style="position: relative; width: 44%; min-width: 320px; min-height: 100vh; box-sizing: border-box; padding: 0;">
-      <div data-ch4-head="" style="position: absolute; left: var(--pad-x); right: var(--pad-x); top: var(--rail-title); display: flex; flex-direction: column; gap: var(--gap-stack); max-width: 42ch;">
-        <div class="t-balance type-display" style="max-width: 12ch;" data-bodoni="section">Putting the story to work</div>
+      <div data-ch4-head="" style="position: absolute; left: var(--pad-x); right: var(--pad-x); top: var(--rail-title); display: flex; flex-direction: column; gap: var(--gap-stack); max-width: min(26rem, 100%);">
+        <div class="type-display-sm" data-bodoni="section">Putting the<br>story to work</div>
         <div class="type-lede-body" style="color: #C6CEDA; max-width: 42ch;">A living documentary property that grows alongside the pursuit.</div>
       </div>
-      <div data-ch4-benefits="" style="position: absolute; left: var(--pad-x); right: var(--pad-x); top: calc(var(--rail-title) + 28vh); min-height: 240px; max-width: 42ch;">
+      <div data-ch4-benefits="" style="position: absolute; left: var(--pad-x); right: var(--pad-x); top: calc(var(--rail-title) + 28vh); min-height: 240px; max-width: min(26rem, 100%);">
         <div data-benefit="0" class="t-card-gap" style="display: flex; flex-direction: column; max-width: 42ch; margin-bottom: 30px;">
           <div class="t-balance type-card" data-bodoni="card">Find the next generation</div>
           <div class="type-lede-body" style="color: #C6CEDA;">Put Core's philosophy in front of entrepreneurs already trying to solve the problems Core cares about, and meet them earlier than anyone else does.</div>
@@ -757,12 +819,13 @@
   </section>
 
   <section data-finale="" data-ground="bone" style="position: relative; min-height: 100vh; background-color: #F4F0E7; color: #0A1526; box-sizing: border-box; background-image: repeating-linear-gradient(0deg, rgba(10,21,38,0.012) 0px, rgba(10,21,38,0.012) 1px, transparent 1px, transparent 10px);">
-    <div data-finale-pad="" class="layout-lede-stack">
-      <div class="lede-stack-inner" style="width: min(92vw, 22ch); align-items: center; text-align: center;">
-        <div data-finale-title="" class="t-box t-center t-display type-display" style="--t-display: 100%; width: 100%; max-width: 100%; font-size: clamp(42px, 6.4vw, 108px); line-height: 0.98;" data-bodoni="section">Make one trillion<br><span class="t-em">personal</span></div>
-        <div data-finale-lede="" class="t-box t-center type-lede-body" style="width: 100%; max-width: none; color: #2C3949;">Greenlight the <span class="t-pilot">pilot<span data-pilot-line="" class="pilot-underline"></span></span> chapter—and put the road in motion.</div>
-        <div data-finale-kicker="" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #8A6410; text-align: center;">THE ASK · PILOT CHAPTER</div>
-        <button type="button" data-ask-commit="" class="ask-commit">Greenlight the pilot</button>
+    <div data-finale-pad="" style="position: absolute; inset: 0;">
+      <div data-finale-ask="" class="layout-lede-stack" style="--gap-stack: clamp(28px, 3.2vw, 44px);">
+        <div class="lede-stack-inner" style="width: min(92vw, 1100px); max-width: min(92vw, 1100px); align-items: center; text-align: center;">
+          <div data-finale-title="" class="t-box t-center t-display type-display" style="--t-display: 22ch; font-size: clamp(42px, 6.4vw, 108px); line-height: 0.98;" data-bodoni="section">Make one trillion<br><span class="t-em">personal</span></div>
+          <div data-finale-tag="" class="t-box t-center" data-bodoni="section" style="width: 34ch; max-width: min(92vw, 34ch);">Let's turn a bold ambition into a story people can <span class="t-em">believe</span> in</div>
+          <button type="button" data-ask-commit="" class="ask-commit">Greenlight the pilot</button>
+        </div>
       </div>
     </div>
   </section>
@@ -967,6 +1030,17 @@ class Component extends DCLogic {
       });
     }
     this.qa('[data-benefit]').forEach(b => { unpin(b); b.style.marginBottom = '30px'; });
+
+    const finale = this.q('[data-finale]');
+    flow(finale);
+    unpin(this.q('[data-finale-pad]'));
+    const ask = this.q('[data-finale-ask]');
+    if (ask) {
+      unpin(ask);
+      ask.classList.add('layout-lede-stack--flow');
+      ask.style.opacity = '1';
+      ask.style.visibility = 'visible';
+    }
   }
 
   setupOnce() {
@@ -1220,7 +1294,7 @@ class Component extends DCLogic {
     if (this.isTouch) {
       this.touchStickyStage(this.q('[data-scene]'), 1 + (this.cfg.lengthVh || 1.5), { allowYBleed: true });
       this.touchStickyStage(this.q('[data-close]'), 5.0);
-      this.touchStickyStage(this.q('[data-ch2]'), 5.5);
+      this.touchStickyStage(this.q('[data-ch2]'), 6.4);
       // ch3 height/overflow owned by chapter3Touch()
       this.touchStickyStage(this.q('[data-ch4]'), 5.0);
       this.touchStickyStage(this.q('[data-finale]'), 2.0);
@@ -1283,6 +1357,34 @@ class Component extends DCLogic {
       ch2Title.style.inset = '0';
       ch2Title.style.margin = '0';
     }
+    const story = this.q('[data-ch2-cap="story"]');
+    if (story) {
+      story.style.position = 'absolute';
+      story.style.inset = '0';
+      story.style.margin = '0';
+      story.style.width = 'auto';
+      story.style.maxWidth = 'none';
+      story.style.transform = '';
+      g.set(story, { clearProps: 'yPercent,xPercent,x,y' });
+    }
+    const storyTitle = this.q('[data-story-title]');
+    if (storyTitle) g.set(storyTitle, { clearProps: 'x,y' });
+    const storySlot = this.q('[data-story-slot]');
+    const graf1 = this.q('[data-story-graf="1"]');
+    const beat2 = this.q('[data-story-beat="2"]');
+    if (storySlot && graf1 && beat2) {
+      g.set([graf1, beat2], { x: 0, y: 0, position: 'relative', left: 'auto', top: 'auto', width: 'auto' });
+      const tallest = Math.max(graf1.offsetHeight, beat2.offsetHeight);
+      storySlot.style.minHeight = Math.round(tallest) + 'px';
+      [graf1, beat2].forEach((el) => {
+        el.style.position = 'absolute';
+        el.style.left = '0';
+        el.style.right = '0';
+        el.style.top = '0';
+        el.style.width = 'auto';
+        g.set(el, { x: 0, y: 0 });
+      });
+    }
     // Still cards share one fixed stage so hard-cuts don't jump.
     ['0', '1', '2'].forEach((k) => {
       const el = this.q('[data-ch2-cap="' + k + '"]');
@@ -1303,7 +1405,7 @@ class Component extends DCLogic {
     });
     // Text holds (made/close) share a stable title-rail slot (not content-height center).
     // Avoid translateX centering — GSAP y tweens would overwrite transform.
-    ['made', 'close'].forEach((k) => {
+    ['bridge', 'close'].forEach((k) => {
       const el = this.q('[data-ch2-cap="' + k + '"]');
       if (!el) return;
       el.style.position = 'absolute';
@@ -1346,15 +1448,55 @@ class Component extends DCLogic {
       });
     }
 
+    const ch4Stack = window.matchMedia('(max-width: 980px), (pointer: coarse) and (max-height: 860px)').matches;
     const col = this.q('[data-ch4-col]');
     if (col) {
-      col.style.position = 'absolute';
-      col.style.left = '0';
-      col.style.top = '0';
-      col.style.height = '100%';
+      col.style.position = ch4Stack ? 'relative' : 'absolute';
+      col.style.left = ch4Stack ? 'auto' : '0';
+      col.style.top = ch4Stack ? 'auto' : '0';
+      col.style.height = ch4Stack ? 'auto' : '100%';
       col.style.minHeight = '0';
     }
-    this.qa('[data-benefit]').forEach(b => g.set(b, { position: 'absolute', left: 0, top: 0, marginBottom: 0 }));
+    const head = this.q('[data-ch4-head]');
+    const benefitsWrap = this.q('[data-ch4-benefits]');
+    const benefits = this.qa('[data-benefit]');
+    if (benefitsWrap && benefits.length) {
+      benefits.forEach((b) => {
+        g.set(b, { x: 0, y: 0, position: 'relative', left: 'auto', top: 'auto', width: 'auto', marginBottom: 0 });
+      });
+      const tallest = benefits.reduce((h, b) => Math.max(h, b.offsetHeight), 0);
+      const cs = getComputedStyle(benefitsWrap);
+      const padL = parseFloat(cs.paddingLeft) || 0;
+      const padR = parseFloat(cs.paddingRight) || 0;
+      const padT = parseFloat(cs.paddingTop) || 0;
+      const padB = parseFloat(cs.paddingBottom) || 0;
+      const wrapH = Math.round(tallest + padT + padB);
+      benefitsWrap.style.minHeight = wrapH + 'px';
+      if (!ch4Stack && head && col) {
+        const gap = Math.round(Math.min(32, window.innerHeight * 0.035));
+        const reserve = 118;
+        const headBottom = head.offsetTop + head.offsetHeight;
+        const maxTop = Math.max(0, col.clientHeight - reserve - wrapH);
+        const raw = headBottom + gap;
+        benefitsWrap.style.top = (maxTop < headBottom + 12 ? headBottom + 12 : Math.min(raw, maxTop)) + 'px';
+      }
+      benefits.forEach((b) => {
+        b.style.position = 'absolute';
+        b.style.left = padL + 'px';
+        b.style.right = padR + 'px';
+        b.style.top = padT + 'px';
+        b.style.width = 'auto';
+        b.style.marginBottom = '0';
+        g.set(b, { x: 0, y: 0 });
+      });
+    }
+
+    const fpad = this.q('[data-finale-pad]');
+    if (fpad) {
+      fpad.style.position = 'absolute';
+      fpad.style.inset = '0';
+      fpad.style.minHeight = '0';
+    }
   }
 
   applyTexture() {
@@ -1479,8 +1621,7 @@ class Component extends DCLogic {
     this.keep(tl);
   }
 
-  // 1b — Impossible Empathy: unresolved people → heartbeat that can't keep up → personal?
-  // Wide plateaus + snap at hold centers; heartbeat plays once on enter (not scrubbed).
+  // 1b — Impossible Empathy: unresolved people → numbers too big to feel → personal?
   closeBeats() {
     const g = window.gsap;
     const sec = this.q('[data-close]');
@@ -1489,14 +1630,58 @@ class Component extends DCLogic {
     const peopleField = this.q('[data-dotfield="people"]');
     const numberField = this.q('[data-dotfield="number"]');
     const silhouette = this.q('[data-silhouette]');
-    const veil = this.q('[data-silhouette-veil]');
-    const heartbeat = this.q('[data-heartbeat]');
-    const heartPath = this.q('[data-heartbeat-path]');
-    const heartFlat = this.q('[data-heartbeat-flat]');
-    const heartDot = this.q('[data-heartbeat-dot]');
     const feelLine = this.q('[data-feel-line]');
+    const storm = this.q('[data-number-storm]');
     const beats = [bridge, people, number, question].filter(Boolean);
-    const useDraw = !!(window.DrawSVGPlugin);
+
+    const STORM_POOL = [
+      '$12B', '$847M', '$61K', '$4.2T', '$220B', '$9.1B', '$38M', '$1.6B',
+      '1T', '415', '180M', '2030', '94%', '8.7%', '33%', '2.4x',
+      '1,000,000,000,000'
+    ];
+    const randNum = () => STORM_POOL[(Math.random() * STORM_POOL.length) | 0];
+    const STORM_KEEPOUT = [
+      { x0: 12, x1: 88, y0: 22, y1: 62 }
+    ];
+
+    const buildStorm = () => {
+      if (!storm) return [];
+      storm.textContent = '';
+      const stormW = storm.offsetWidth || 1;
+      const spans = [];
+      for (let i = 0; i < 42; i++) {
+        const text = randNum();
+        const size = 11 + Math.random() * 22;
+        const halfW = (text.length * size * 0.62 * 0.5) / stormW * 100;
+        let left = 0, top = 0, ok = false;
+        for (let t = 0; t < 28 && !ok; t++) {
+          left = 4 + Math.random() * 92;
+          top = 8 + Math.random() * 84;
+          ok = !STORM_KEEPOUT.some((r) => left + halfW > r.x0 && left - halfW < r.x1 && top > r.y0 && top < r.y1);
+        }
+        if (!ok) continue;
+        const s = document.createElement('span');
+        const gold = Math.random() < 0.28;
+        s.textContent = text;
+        s.style.cssText = [
+          'position:absolute',
+          'left:' + left + '%',
+          'top:' + top + '%',
+          'font-family:\'JetBrains Mono\',monospace',
+          'font-size:' + size + 'px',
+          'letter-spacing:0.02em',
+          'color:' + (gold ? '#D9A441' : '#2C3949'),
+          'opacity:0',
+          'white-space:nowrap',
+          'transform:translate(-50%,-50%)',
+          'pointer-events:none',
+          'user-select:none'
+        ].join(';');
+        storm.appendChild(s);
+        spans.push(s);
+      }
+      return spans;
+    };
 
     if (this.reduced) {
       g.set(beats, { autoAlpha: 1, y: 0 });
@@ -1504,8 +1689,7 @@ class Component extends DCLogic {
       if (numberField) g.set(numberField, { autoAlpha: 1 });
       if (feelLine) g.set(feelLine, { autoAlpha: 1 });
       if (silhouette) g.set(silhouette, { autoAlpha: 1 });
-      if (heartbeat) g.set(heartbeat, { autoAlpha: 1 });
-      if (heartFlat) g.set(heartFlat, { opacity: 0 });
+      if (storm) g.set(storm, { autoAlpha: 0 });
       return;
     }
 
@@ -1513,71 +1697,53 @@ class Component extends DCLogic {
     if (peopleField) g.set(peopleField, { autoAlpha: 0 });
     if (numberField) g.set(numberField, { autoAlpha: 0 });
     if (silhouette) g.set(silhouette, { autoAlpha: 0, scale: 0.96 });
-    // Static unresolved blur — no scrub race in/out
-    if (veil) g.set(veil, { filter: 'blur(18px)' });
-    if (heartbeat) g.set(heartbeat, { autoAlpha: 0 });
-    if (heartPath) g.set(heartPath, { opacity: 1 });
-    if (heartFlat) g.set(heartFlat, { opacity: 0 });
-    if (heartDot) g.set(heartDot, { scale: 1, opacity: 1 });
     if (feelLine) g.set(feelLine, { autoAlpha: 0, y: 10 });
-    if (heartPath && useDraw) g.set(heartPath, { drawSVG: '0%' });
-    else if (heartPath) {
-      const len = heartPath.getTotalLength ? heartPath.getTotalLength() : 600;
-      heartPath.style.strokeDasharray = len;
-      heartPath.style.strokeDashoffset = len;
-    }
+    if (storm) g.set(storm, { autoAlpha: 0 });
 
-    const HEART_ENTER = 0.66;
-    const HEART_EXIT = 0.58;
-    let heartPlayed = false;
-    let heartTl = null;
+    const STORM_ENTER = 0.60;
+    const STORM_EXIT = 0.56;
+    let stormPlayed = false;
+    let stormTl = null;
+    let stormSpans = [];
 
-    const resetHeartVisuals = () => {
-      if (heartPath && useDraw) g.set(heartPath, { drawSVG: '0%', opacity: 1 });
-      else if (heartPath) {
-        const len = heartPath.getTotalLength ? heartPath.getTotalLength() : 600;
-        heartPath.style.strokeDasharray = len;
-        heartPath.style.strokeDashoffset = len;
-        g.set(heartPath, { opacity: 1 });
+    const killStorm = () => {
+      if (stormTl) { stormTl.kill(); stormTl = null; }
+      if (storm) {
+        try { g.killTweensOf(storm.querySelectorAll('span')); } catch (e) {}
+        storm.textContent = '';
+        g.set(storm, { autoAlpha: 0 });
       }
-      if (heartFlat) g.set(heartFlat, { opacity: 0 });
-      if (heartDot) g.set(heartDot, { scale: 1, opacity: 1 });
+      stormSpans = [];
     };
 
-    const killHeart = () => {
-      if (heartTl) { heartTl.kill(); heartTl = null; }
-      resetHeartVisuals();
+    const playStorm = () => {
+      if (stormPlayed) return;
+      stormPlayed = true;
+      killStorm();
+      stormPlayed = true;
+      if (storm) g.set(storm, { autoAlpha: 1 });
+      stormSpans = buildStorm();
+      stormTl = g.timeline();
+      stormSpans.forEach((s, i) => {
+        stormTl.to(s, { opacity: 0.18 + Math.random() * 0.72, duration: 0.05, ease: 'none' }, (i / Math.max(stormSpans.length, 1)) * 0.32);
+      });
+      for (let round = 0; round < 18; round++) {
+        stormTl.call(() => {
+          stormSpans.forEach((s) => {
+            if (Math.random() >= 0.5) return;
+            const next = randNum();
+            if (Math.abs(next.length - s.textContent.length) <= 2) s.textContent = next;
+          });
+        }, null, 0.36 + round * 0.09);
+      }
+      this.keep(stormTl);
     };
 
-    const playHeart = () => {
-      if (heartPlayed) return;
-      heartPlayed = true;
-      if (heartTl) { heartTl.kill(); heartTl = null; }
-      resetHeartVisuals();
-      heartTl = g.timeline();
-      if (heartPath && useDraw) {
-        heartTl.to(heartPath, { drawSVG: '100%', duration: 0.55, ease: 'none' }, 0);
-      } else if (heartPath) {
-        heartTl.to(heartPath, { strokeDashoffset: 0, duration: 0.55, ease: 'none' }, 0);
-      }
-      if (heartDot) {
-        heartTl.to(heartDot, { scale: 1.55, duration: 0.28, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 0.15)
-          .to(heartDot, { scale: 1.6, duration: 0.16, yoyo: true, repeat: 3, ease: 'power1.inOut' }, 0.7)
-          .to(heartDot, { scale: 1.45, duration: 0.09, yoyo: true, repeat: 5, ease: 'power1.inOut' }, 1.35)
-          .to(heartDot, { scale: 1, opacity: 0.2, duration: 0.35, ease: 'power2.out' }, 2.0);
-      }
-      if (heartPath && heartFlat) {
-        heartTl.to(heartPath, { opacity: 0, duration: 0.25, ease: 'power1.in' }, 1.95)
-          .to(heartFlat, { opacity: 1, duration: 0.25, ease: 'power1.out' }, 1.95);
-      }
-      this.keep(heartTl);
-    };
-
-    const onHeartProgress = (p) => {
-      if (p >= HEART_ENTER) playHeart();
-      else if (p <= HEART_EXIT && heartPlayed) {
-        heartPlayed = false;
-        killHeart();
+    const onStormProgress = (p) => {
+      if (p >= STORM_ENTER) playStorm();
+      else if (p <= STORM_EXIT && stormPlayed) {
+        stormPlayed = false;
+        killStorm();
       }
     };
 
@@ -1586,18 +1752,16 @@ class Component extends DCLogic {
         this.scrollSpan(sec, '+=400%'),
         {
           snap: this.magneticSnap([0.17, 0.44, 0.72, 0.96], 0.10),
-          onUpdate: (self) => onHeartProgress(self.progress)
+          onUpdate: (self) => onStormProgress(self.progress)
         }
       ))
     });
 
-    // bridge: in 0.04–0.12 · plateau 0.12–0.22 · out 0.22–0.28 · snap 0.17
     if (bridge) {
       tl.to(bridge, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.04)
         .to(bridge, { autoAlpha: 0, y: -10, duration: 0.06, ease: 'power2.in' }, 0.22);
     }
 
-    // people: in 0.30–0.38 · plateau 0.38–0.50 · out 0.50–0.56 · snap 0.44
     tl.to(people, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.30);
     if (peopleField) tl.to(peopleField, { autoAlpha: 1, duration: 0.08 }, 0.30);
     if (silhouette) tl.to(silhouette, { autoAlpha: 1, scale: 1, duration: 0.08, ease: 'power2.out' }, 0.30);
@@ -1605,19 +1769,15 @@ class Component extends DCLogic {
     if (peopleField) tl.to(peopleField, { autoAlpha: 0, duration: 0.06 }, 0.50);
     if (silhouette) tl.to(silhouette, { autoAlpha: 0, duration: 0.06 }, 0.50);
 
-    // number: in 0.58–0.66 · plateau 0.66–0.78 · out 0.78–0.84 · snap 0.72
-    // Scrub owns opacity only; pulse is time-based via playHeart.
     tl.to(number, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.58);
     if (numberField) tl.to(numberField, { autoAlpha: 1, duration: 0.08 }, 0.58);
-    if (heartbeat) tl.to(heartbeat, { autoAlpha: 1, duration: 0.08 }, 0.58);
-    if (feelLine) tl.to(feelLine, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.58);
+    if (feelLine) tl.to(feelLine, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.62);
 
     tl.to(number, { autoAlpha: 0, y: -10, duration: 0.06, ease: 'power2.in' }, 0.78);
     if (numberField) tl.to(numberField, { autoAlpha: 0, duration: 0.06 }, 0.78);
-    if (heartbeat) tl.to(heartbeat, { autoAlpha: 0, duration: 0.06 }, 0.78);
+    if (storm) tl.to(storm, { autoAlpha: 0, duration: 0.06 }, 0.78);
     if (feelLine) tl.to(feelLine, { autoAlpha: 0, duration: 0.06 }, 0.78);
 
-    // question: in 0.86–0.92 · plateau 0.92–1.00 · snap 0.96
     tl.to(question, { autoAlpha: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.86)
       .to({}, { duration: 0.01 }, 1);
 
@@ -1629,7 +1789,11 @@ class Component extends DCLogic {
     const g = window.gsap;
     const sec = this.q('[data-ch2]'), ground = this.q('[data-ch2-ground]'), pad = this.q('[data-ch2-pad]');
     const cap = (k) => this.q('[data-ch2-cap="' + k + '"]');
-    const title = cap('title'), c0 = cap('0'), c1 = cap('1'), c2 = cap('2'), made = cap('made'), close = cap('close');
+    const title = cap('title'), bridge = cap('bridge'), c0 = cap('0'), c1 = cap('1'), c2 = cap('2');
+    const story = cap('story'), close = cap('close');
+    const graf1 = this.q('[data-story-graf="1"]');
+    const beat2 = this.q('[data-story-beat="2"]');
+    const graf3 = this.q('[data-story-graf="3"]');
     const track = this.q('[data-measure-track]'), meta = this.q('[data-measure-meta]'), amount = this.q('[data-measure-amount]');
 
     const INK = '#0A1526', BONE = '#F4F0E7';
@@ -1640,12 +1804,16 @@ class Component extends DCLogic {
     const still2 = c2 && c2.querySelector('[data-still-img]');
 
     if (this.reduced) {
-      g.set([title, c0, c1, c2, made, close], { opacity: 1 });
+      g.set([title, bridge, c0, c1, c2, story, close, graf1, beat2, graf3].filter(Boolean), { opacity: 1 });
       g.set([still0, still1, still2].filter(Boolean), { scale: 1.04, x: 0, y: 0 });
+      if (story) story.classList.add('layout-lede-stack--flow');
       return;
     }
 
-    g.set([c0, c1, c2, made, close], { opacity: 0 });
+    g.set([c0, c1, c2, bridge, story, close].filter(Boolean), { opacity: 0 });
+    if (graf1) g.set(graf1, { opacity: 1 });
+    if (beat2) g.set(beat2, { opacity: 0 });
+    if (graf3) g.set(graf3, { opacity: 0 });
     // One stable ink ground for the whole chapter — no bone/deep/slate flashes.
     g.set(ground, { backgroundColor: INK });
     g.set(pad, { color: BONE });
@@ -1658,34 +1826,43 @@ class Component extends DCLogic {
     // close full ≥0.05 after fade — tail was uncatchable at 0.97–1.00.
     const tl = g.timeline({
       scrollTrigger: this.pinScroll(Object.assign(
-        this.scrollSpan(sec, '+=450%'),
-        { snap: this.magneticSnap([0.06, 0.20, 0.42, 0.64, 0.84, 0.97], 0.09) }
+        this.scrollSpan(sec, '+=540%'),
+        { snap: this.magneticSnap([0.04, 0.13, 0.28, 0.44, 0.58, 0.74, 0.86, 0.97], 0.07) }
       ))
     });
 
-    tl.to(title, { opacity: 0, duration: 0.06, ease: 'power1.inOut' }, 0.04);
+    tl.to(title, { opacity: 0, duration: 0.04, ease: 'power1.inOut' }, 0.03);
 
-    // c0: in 0.10–0.16 · plateau 0.16–0.25 · out 0.25–0.30 · snap 0.20
-    tl.to(c0, { opacity: 1, duration: 0.06, ease: 'power1.out' }, 0.10)
-      .to(c0, { opacity: 0, duration: 0.05, ease: 'power1.inOut' }, 0.25);
-    if (still0) tl.fromTo(still0, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.20 }, 0.10);
+    // bridge: in 0.07–0.11 · plateau 0.11–0.16 · out 0.16–0.20 · snap 0.13
+    if (bridge) {
+      tl.fromTo(bridge, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.04, ease: 'power2.out' }, 0.07)
+        .to(bridge, { opacity: 0, y: -12, duration: 0.04, ease: 'power2.in' }, 0.16);
+    }
 
-    // c1: in 0.32–0.38 · plateau 0.38–0.47 · out 0.47–0.52 · snap 0.42
-    tl.to(c1, { opacity: 1, duration: 0.06, ease: 'power1.out' }, 0.32)
-      .to(c1, { opacity: 0, duration: 0.05, ease: 'power1.inOut' }, 0.47);
-    if (still1) tl.fromTo(still1, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.20 }, 0.32);
+    // c0: in 0.22–0.28 · plateau 0.28–0.36 · out 0.36–0.40 · snap 0.28
+    tl.to(c0, { opacity: 1, duration: 0.06, ease: 'power1.out' }, 0.22)
+      .to(c0, { opacity: 0, duration: 0.04, ease: 'power1.inOut' }, 0.36);
+    if (still0) tl.fromTo(still0, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.18 }, 0.22);
 
-    // c2: in 0.54–0.60 · plateau 0.60–0.69 · out 0.69–0.73 · snap 0.64
-    tl.to(c2, { opacity: 1, duration: 0.06, ease: 'power1.out' }, 0.54)
-      .to(c2, { opacity: 0, duration: 0.04, ease: 'power1.inOut' }, 0.69);
-    if (still2) tl.fromTo(still2, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.19 }, 0.54);
+    // c1: in 0.38–0.44 · plateau 0.44–0.50 · out 0.50–0.54 · snap 0.44
+    tl.to(c1, { opacity: 1, duration: 0.06, ease: 'power1.out' }, 0.38)
+      .to(c1, { opacity: 0, duration: 0.04, ease: 'power1.inOut' }, 0.50);
+    if (still1) tl.fromTo(still1, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.16 }, 0.38);
 
-    // made: in 0.75–0.80 · plateau 0.80–0.88 · out 0.88–0.90 · snap 0.84
-    tl.fromTo(made, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.05, ease: 'power2.out' }, 0.75)
-      .to(made, { opacity: 0, y: -12, duration: 0.02, ease: 'power2.in' }, 0.88);
+    // c2: in 0.52–0.58 · plateau 0.58–0.64 · out 0.64–0.68 · snap 0.58
+    tl.to(c2, { opacity: 1, duration: 0.06, ease: 'power1.out' }, 0.52)
+      .to(c2, { opacity: 0, duration: 0.04, ease: 'power1.inOut' }, 0.64);
+    if (still2) tl.fromTo(still2, { scale: 1.04, x: 0, y: 0 }, { scale: 1.09, x: 0, y: -4, ease: 'none', duration: 0.16 }, 0.52);
 
-    // close: in 0.91–0.95 · plateau 0.95–1.00 · snap 0.97
-    tl.fromTo(close, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.04, ease: 'power2.out' }, 0.91)
+    // One lockup: title never tweens. Grafs cut in the slot underneath.
+    if (story) tl.to(story, { opacity: 1, duration: 0.04, ease: 'power2.out' }, 0.70);
+    if (graf1) tl.to(graf1, { opacity: 0, duration: 0.02, ease: 'none' }, 0.78);
+    if (beat2) tl.to(beat2, { opacity: 1, duration: 0.02, ease: 'none' }, 0.81);
+    if (graf3) tl.to(graf3, { opacity: 1, duration: 0.03, ease: 'power2.out' }, 0.84);
+    if (story) tl.to(story, { opacity: 0, duration: 0.03, ease: 'power2.in' }, 0.91);
+
+    // close: in 0.93–0.97 · plateau 0.97–1.00 · snap 0.97
+    tl.fromTo(close, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.04, ease: 'power2.out' }, 0.93)
       .to({}, { duration: 0.01 }, 1);
     this.keep(tl);
   }
@@ -2054,13 +2231,13 @@ class Component extends DCLogic {
     });
 
     // b0: in 0.38–0.44 · plateau 0.44–0.54 · out 0.54–0.58 · snap 0.48
-    tl.fromTo(benefits[0], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.38)
-      .to(benefits[0], { opacity: 0, y: -20, duration: 0.04, ease: 'power2.in' }, 0.54);
+    tl.fromTo(benefits[0], { opacity: 0 }, { opacity: 1, duration: 0.06, ease: 'power2.out' }, 0.38)
+      .to(benefits[0], { opacity: 0, duration: 0.04, ease: 'power2.in' }, 0.54);
     // b1: in 0.60–0.66 · plateau 0.66–0.76 · out 0.76–0.80 · snap 0.68
-    tl.fromTo(benefits[1], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.06, ease: 'power2.out' }, 0.60)
-      .to(benefits[1], { opacity: 0, y: -20, duration: 0.04, ease: 'power2.in' }, 0.76);
+    tl.fromTo(benefits[1], { opacity: 0 }, { opacity: 1, duration: 0.06, ease: 'power2.out' }, 0.60)
+      .to(benefits[1], { opacity: 0, duration: 0.04, ease: 'power2.in' }, 0.76);
     // b2: in 0.82–0.86 · plateau 0.86–0.92 · snap 0.86
-    tl.fromTo(benefits[2], { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.04, ease: 'power2.out' }, 0.82);
+    tl.fromTo(benefits[2], { opacity: 0 }, { opacity: 1, duration: 0.04, ease: 'power2.out' }, 0.82);
 
     // measure→2030 · hold · snap 0.96
     tl.to(fill, { scaleX: 1, duration: 0.05, ease: 'power2.inOut' }, 0.93)
@@ -2075,10 +2252,9 @@ class Component extends DCLogic {
   finaleAsk() {
     const g = window.gsap;
     const sec = this.q('[data-finale]');
+    const ask = this.q('[data-finale-ask]');
     const title = this.q('[data-finale-title]');
-    const lede = this.q('[data-finale-lede]');
-    const kicker = this.q('[data-finale-kicker]');
-    const line = this.q('[data-pilot-line]');
+    const tag = this.q('[data-finale-tag]');
     const btn = this.q('[data-ask-commit]');
     if (!sec) return;
 
@@ -2086,7 +2262,6 @@ class Component extends DCLogic {
       if (!btn) return;
       btn.classList.add('is-committed');
       btn.textContent = 'Pilot greenlit';
-      if (line) g.to(line, { scaleX: 1, duration: 0.25, ease: 'power2.out', overwrite: 'auto' });
       this.playAskClick();
     };
 
@@ -2096,25 +2271,23 @@ class Component extends DCLogic {
     }
 
     if (this.reduced) {
-      g.set([title, lede, kicker, btn].filter(Boolean), { autoAlpha: 1, y: 0 });
-      if (line) g.set(line, { scaleX: 1 });
+      g.set([title, tag, btn, ask].filter(Boolean), { autoAlpha: 1, y: 0 });
+      if (ask) ask.classList.add('layout-lede-stack--flow');
       return;
     }
 
-    g.set([title, lede, kicker, btn].filter(Boolean), { autoAlpha: 0, y: 20 });
-    if (line) g.set(line, { scaleX: 0 });
+    g.set([title, tag, btn].filter(Boolean), { autoAlpha: 0, y: 16 });
+    if (ask) g.set(ask, { autoAlpha: 1 });
 
     const tl = g.timeline({
       scrollTrigger: this.pinScroll(Object.assign(
-        this.scrollSpan(sec, '+=140%'),
-        { snap: this.magneticSnap([0.28, 0.78], 0.10) }
+        this.scrollSpan(sec, '+=120%'),
+        { snap: this.magneticSnap([0.62], 0.12) }
       ))
     });
-    tl.to(title, { autoAlpha: 1, y: 0, duration: 0.12, ease: 'power2.out' }, 0.08)
-      .to(lede, { autoAlpha: 1, y: 0, duration: 0.10, ease: 'power2.out' }, 0.22);
-    if (line) tl.to(line, { scaleX: 1, duration: 0.16, ease: 'power2.inOut' }, 0.34);
-    tl.to(kicker, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.42);
-    if (btn) tl.to(btn, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.50);
+    tl.to(title, { autoAlpha: 1, y: 0, duration: 0.12, ease: 'power2.out' }, 0.10);
+    if (tag) tl.to(tag, { autoAlpha: 1, y: 0, duration: 0.10, ease: 'power2.out' }, 0.32);
+    if (btn) tl.to(btn, { autoAlpha: 1, y: 0, duration: 0.08, ease: 'power2.out' }, 0.52);
     tl.to({}, { duration: 0.01 }, 1);
     this.keep(tl);
   }
