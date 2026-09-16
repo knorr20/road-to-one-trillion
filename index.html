@@ -414,9 +414,17 @@
     pointer-events: none;
     z-index: 58;
   }
-  /* Ch4 is a two-column pin: sit the copy higher so title + card fit above the measure bar. */
+  /* Ch4: copy + network are one centered lockup, not a left rail + far-right spray. */
   [data-ch4] {
-    --rail-title: 18%;
+    --rail-title: 12%;
+  }
+  [data-ch4-frame] {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: min(1120px, 88vw);
+    height: min(620px, 70vh);
+    transform: translate(-50%, -50%);
   }
   /* iPad / narrow: stack ch4 so network + benefits don't collide */
   @media (max-width: 980px), (pointer: coarse) and (max-height: 860px) {
@@ -424,8 +432,20 @@
       display: flex;
       flex-direction: column;
     }
+    [data-ch4-frame] {
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
+      width: 100% !important;
+      height: auto !important;
+      transform: none !important;
+    }
     [data-ch4-stage] {
       position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      top: auto !important;
+      bottom: auto !important;
       width: 100% !important;
       height: min(36vh, 260px) !important;
       flex: 0 0 auto;
@@ -604,17 +624,39 @@
     letter-spacing: 0.08em;
   }
 
-  /* Still overlay captions */
+  /* Still overlay captions: subject + italic line, centered like People/Number */
   .media-caption {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    padding: clamp(20px, 3vw, 40px);
-    max-width: min(92%, var(--measure-evidence));
+    width: 100%;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(6px, 0.9vw, 12px);
+    padding: clamp(22px, 3.2vw, 44px) clamp(20px, 3vw, 40px);
     color: #F4F0E7;
+    text-align: center;
     text-shadow: 0 1px 18px rgba(10,21,38,0.55);
     box-sizing: border-box;
+    pointer-events: none;
+  }
+  .media-caption .caption-subject {
+    margin: 0;
+    white-space: nowrap;
+  }
+  .media-caption .caption-line {
+    margin: 0;
+    max-width: min(92%, 36ch);
+    white-space: nowrap;
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(20px, 2.2vw, 32px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
   }
 
   a { color: #D9A441; text-decoration: none; }
@@ -642,10 +684,10 @@
     </div>
   </section>
 
-  <section data-scene="" data-ground="navy" style="position: relative; height: 100vh; overflow: hidden; background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px);">
+  <section data-scene="" data-ground="navy" style="position: relative; height: 100vh; overflow: visible; clip-path: inset(-8vh 0 0 0); -webkit-clip-path: inset(-8vh 0 0 0); background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px);">
     <div data-dotfield="scene" style="position: absolute; inset: 0; pointer-events: none; z-index: 0;"></div>
     <div data-word-slot="" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1;">
-      <div data-word="" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: 300px; line-height: 0.78; letter-spacing: -0.038em; white-space: nowrap; transform-origin: 0% 50%;" data-bodoni="mega">TRILLION</div>
+      <div data-word="" style="font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: 300px; line-height: 1; padding: 0.12em 0.04em; letter-spacing: -0.038em; white-space: nowrap; overflow: visible; transform-origin: 0% 50%;" data-bodoni="mega">TRILLION</div>
     </div>
   </section>
 
@@ -696,21 +738,30 @@
             <img data-still-img="" src="assets/stills/home.webp" alt="Homebuyer receiving keys in front of a sold house" width="1920" height="1080" decoding="async" style="position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:50% 35%;transform-origin:50% 35%;will-change:transform;filter:grayscale(0.12) contrast(1.1) brightness(0.94) sepia(0.08);">
           </div>
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,21,38,0.02) 0%, rgba(10,21,38,0.12) 45%, rgba(10,21,38,0.68) 74%, rgba(10,21,38,0.94) 100%); pointer-events: none;"></div>
-          <div class="media-caption type-card" data-bodoni="card">Families buying their<br>first home</div>
+          <div class="media-caption">
+            <div class="caption-subject type-card" data-bodoni="card">Families</div>
+            <div class="caption-line" data-bodoni="card">buying their first home</div>
+          </div>
         </div>
         <div data-ch2-cap="1" style="position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
           <div data-still-frame="" style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0A1526;">
             <img data-still-img="" src="assets/stills/business.webp" alt="Entrepreneur at work in their business" width="1920" height="1080" decoding="async" style="position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:50% 35%;transform-origin:50% 35%;will-change:transform;filter:grayscale(0.2) contrast(1.1) brightness(0.92) sepia(0.08);">
           </div>
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,21,38,0.08) 0%, rgba(10,21,38,0.55) 58%, rgba(10,21,38,0.9) 100%); pointer-events: none;"></div>
-          <div class="media-caption type-card" data-bodoni="card">Entrepreneurs starting their first business,<br>and creating new jobs</div>
+          <div class="media-caption">
+            <div class="caption-subject type-card" data-bodoni="card">Entrepreneurs</div>
+            <div class="caption-line" data-bodoni="card">creating new jobs</div>
+          </div>
         </div>
         <div data-ch2-cap="2" style="position: relative; border-radius: 4px; overflow: hidden; width: min(1280px, 94vw); max-width: 100%; margin-left: auto; margin-right: auto;">
           <div data-still-frame="" style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0A1526;">
             <img data-still-img="" src="assets/stills/care.webp" alt="Clinician with a patient" width="1920" height="1080" decoding="async" style="position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;object-position:50% 32%;transform-origin:50% 32%;will-change:transform;filter:grayscale(0.2) contrast(1.1) brightness(0.92) sepia(0.08);">
           </div>
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,21,38,0.08) 0%, rgba(10,21,38,0.55) 58%, rgba(10,21,38,0.9) 100%); pointer-events: none;"></div>
-          <div class="media-caption type-card" data-bodoni="card">Parents who don't have to panic over every runny nose,<br>because they have insurance they can count on.</div>
+          <div class="media-caption">
+            <div class="caption-subject type-card" data-bodoni="card">Parents</div>
+            <div class="caption-line" data-bodoni="card">with insurance they can count on</div>
+          </div>
         </div>
         <div data-ch2-cap="story" class="layout-lede-stack" style="--rail-title: 16%; --gap-stack: 22px;">
           <div class="lede-stack-inner" style="width: min(92vw, 680px); max-width: min(92vw, 680px); font-size: 16px; align-items: flex-start;">
@@ -739,8 +790,7 @@
       <div style="flex: 0 0 100vw; height: 100%; position: relative; box-sizing: border-box;">
         <div class="layout-lede-stack">
           <div class="lede-stack-inner">
-            <div class="t-box t-justify t-display type-display" style="--t-display: var(--measure-display);" data-bodoni="section">Designed as a campaign—<br>not a single film</div>
-            <div class="t-box t-justify t-lede" style="color: #2C3949; margin: 0;"><span class="t-em-italic">The Road to One Trillion</span> is designed as an ongoing documentary campaign—not a single film. More than talking heads describing a better future. We follow the people building it, go inside the companies taking on America's hardest problems, and show what is working, what isn't, and how far there is still to go.</div>
+            <div class="t-box t-justify t-display type-display" style="--t-display: 24ch;" data-bodoni="section">Designed as a campaign—<br>not a single film</div>
           </div>
         </div>
       </div>
@@ -782,7 +832,8 @@
   </section>
 
   <section data-ch4="" data-ground="navy" style="position: relative; min-height: 100vh; background-color: #0A1526; background-image: repeating-linear-gradient(0deg, rgba(244,240,231,0.035) 0px, rgba(244,240,231,0.035) 1px, transparent 1px, transparent 9px);">
-    <div data-ch4-stage="" style="position: absolute; right: 0; top: 0; width: 54%; height: 100%;">
+    <div data-ch4-frame="">
+    <div data-ch4-stage="" style="position: absolute; left: 46%; right: 0; top: 6%; bottom: 4%; width: auto; height: auto;">
       <svg data-ch4-edges="" style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;"></svg>
       <div data-ch4-node="Ripple" data-kind="company" style="position: absolute; left: 0; top: 0; opacity: 0; color: #F4F0E7; white-space: nowrap; display: flex; align-items: center; gap: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #D9A441; flex: 0 0 auto; display: block;"></span><img src="assets/logos/ripple.svg" alt="Ripple" width="52" height="15" decoding="async" style="height: 15px; width: 52px; display: block; opacity: 0.92;"></div>
       <div data-ch4-node="NerdWallet" data-kind="company" style="position: absolute; left: 0; top: 0; opacity: 0; color: #F4F0E7; white-space: nowrap; display: flex; align-items: center; gap: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #D9A441; flex: 0 0 auto; display: block;"></span><img src="assets/logos/nerdwallet.svg" alt="NerdWallet" width="84" height="14" decoding="async" style="height: 14px; width: 84px; display: block; opacity: 0.92;"></div>
@@ -796,12 +847,12 @@
       <div data-ch4-node="investors" data-kind="role" style="position: absolute; left: 0; top: 0; opacity: 0; font-size: 12px; letter-spacing: 0.04em; color: #8E9AAB; white-space: nowrap; display: flex; align-items: center; gap: 8px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #4A5769; display: block;"></span>investors</div>
       <div data-ch4-node="viewers" data-kind="role" style="position: absolute; left: 0; top: 0; opacity: 0; font-size: 12px; letter-spacing: 0.04em; color: #8E9AAB; white-space: nowrap; display: flex; align-items: center; gap: 8px;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #4A5769; display: block;"></span>viewers</div>
     </div>
-    <div data-ch4-col="" style="position: relative; width: 44%; min-width: 320px; min-height: 100vh; box-sizing: border-box; padding: 0;">
-      <div data-ch4-head="" style="position: absolute; left: var(--pad-x); right: var(--pad-x); top: var(--rail-title); display: flex; flex-direction: column; gap: var(--gap-stack); max-width: min(26rem, 100%);">
+    <div data-ch4-col="" style="position: relative; width: 44%; min-width: 280px; min-height: 100%; height: 100%; box-sizing: border-box; padding: 0;">
+      <div data-ch4-head="" style="position: absolute; left: 0; right: 8%; top: var(--rail-title); display: flex; flex-direction: column; gap: var(--gap-stack); max-width: min(26rem, 100%);">
         <div class="type-display-sm" data-bodoni="section">Putting the<br>story to work</div>
         <div class="type-lede-body" style="color: #C6CEDA; max-width: 42ch;">A living documentary property that grows alongside the pursuit.</div>
       </div>
-      <div data-ch4-benefits="" style="position: absolute; left: var(--pad-x); right: var(--pad-x); top: calc(var(--rail-title) + 28vh); min-height: 240px; max-width: min(26rem, 100%);">
+      <div data-ch4-benefits="" style="position: absolute; left: 0; right: 8%; top: calc(var(--rail-title) + 28vh); min-height: 240px; max-width: min(26rem, 100%);">
         <div data-benefit="0" class="t-card-gap" style="display: flex; flex-direction: column; max-width: 42ch; margin-bottom: 30px;">
           <div class="t-balance type-card" data-bodoni="card">Find the next generation</div>
           <div class="type-lede-body" style="color: #C6CEDA;">Put Core's philosophy in front of entrepreneurs already trying to solve the problems Core cares about, and meet them earlier than anyone else does.</div>
@@ -815,6 +866,7 @@
           <div class="type-lede-body" style="color: #C6CEDA;">Every founder, company, customer, expert, investor and viewer brought into the story creates new connections, and new opportunities for Core.</div>
         </div>
       </div>
+    </div>
     </div>
   </section>
 
@@ -1026,7 +1078,7 @@ class Component extends DCLogic {
       this.qa('[data-ch4-node]').forEach((el, i, arr) => {
         const a = (i / arr.length) * Math.PI * 2;
         el.style.opacity = '1';
-        el.style.transform = 'translate(' + (r.width / 2 + Math.cos(a) * r.width * 0.34 - el.offsetWidth / 2) + 'px,' + (r.height / 2 + Math.sin(a) * r.height * 0.33 - el.offsetHeight / 2) + 'px)';
+        el.style.transform = 'translate(' + (r.width * 0.50 + Math.cos(a) * r.width * 0.28 - el.offsetWidth / 2) + 'px,' + (r.height * 0.48 + Math.sin(a) * r.height * 0.30 - el.offsetHeight / 2) + 'px)';
       });
     }
     this.qa('[data-benefit]').forEach(b => { unpin(b); b.style.marginBottom = '30px'; });
@@ -1307,7 +1359,14 @@ class Component extends DCLogic {
       viewport(this.q('[data-ch4]'));
       viewport(this.q('[data-finale]'));
       const scene = this.q('[data-scene]');
-      if (scene) { scene.style.height = '100vh'; scene.style.overflow = 'hidden'; }
+      if (scene) {
+        // Clip sides only — overflow-x:hidden + overflow-y:visible computes to
+        // auto, which still slices glyph tops in Blink. clip-path keeps Y bleed.
+        scene.style.height = '100vh';
+        scene.style.overflow = 'visible';
+        scene.style.clipPath = 'inset(-8vh 0 0 0)';
+        scene.style.webkitClipPath = 'inset(-8vh 0 0 0)';
+      }
     }
 
     const cpad = this.q('[data-close-pad]');
@@ -1593,15 +1652,18 @@ class Component extends DCLogic {
     const slot = this.q('[data-word-slot]');
     const fill = this.q('[data-measure-fill]'), meta = this.q('[data-measure-meta]');
     const NORM = 2.2;
-    // iPad: keep glyph tops (T crossbar) in frame — tight line-box + mega scale
-    // was getting sliced by the sticky clip before scroll shrink.
-    if (this.isTouch && word) {
-      word.style.lineHeight = '0.92';
+    // Blink (Chrome/Brave) clips transformed text to the line box. Tight 0.78
+    // line-height sliced Bodoni T-bars and I serifs at open scale; Safari often
+    // still painted the ink overflow. Keep the glyphs inside the box everywhere.
+    if (word) {
+      word.style.lineHeight = '1';
+      word.style.paddingTop = '0.12em';
+      word.style.paddingBottom = '0.12em';
       word.style.overflow = 'visible';
     }
-    if (this.isTouch && slot) {
-      // Bias the crop slightly downward so open-scale tops aren't flush-cut.
-      slot.style.top = '56%';
+    if (slot) {
+      // Slight downward bias so open-scale tops aren't flush-cut.
+      slot.style.top = this.isTouch ? '56%' : '53%';
     }
     const fit = () => {
       g.set(word, { scale: 1, x: 0 });
@@ -2205,19 +2267,21 @@ class Component extends DCLogic {
     };
 
     const r0 = rect();
+    const cx = r0.width * 0.50;
+    const cy = r0.height * 0.48;
     nodes.forEach((n, i) => {
       const a = (i / nodes.length) * Math.PI * 2;
-      n.x = r0.width / 2 + Math.cos(a) * r0.width * 0.34;
-      n.y = r0.height / 2 + Math.sin(a) * r0.height * 0.32;
+      n.x = cx + Math.cos(a) * r0.width * 0.28;
+      n.y = cy + Math.sin(a) * r0.height * 0.30;
     });
 
     const d3 = window.d3;
     if (d3 && d3.forceSimulation) {
       this.sim = d3.forceSimulation(nodes)
-        .force('charge', d3.forceManyBody().strength(-220))
-        .force('link', d3.forceLink(links).id(d => d.id).distance(r0.width * 0.17).strength(0.5))
-        .force('center', d3.forceCenter(r0.width / 2, r0.height / 2))
-        .force('collide', d3.forceCollide(58))
+        .force('charge', d3.forceManyBody().strength(-140))
+        .force('link', d3.forceLink(links).id(d => d.id).distance(Math.max(72, r0.width * 0.12)).strength(0.55))
+        .force('center', d3.forceCenter(cx, cy))
+        .force('collide', d3.forceCollide(46))
         .alpha(0.9).alphaDecay(0.03)
         .on('tick', place);
       if (this.reduced) { this.sim.tick(220); this.sim.stop(); place(); }
